@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TP 8 Haces de rectas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBF8F1; --paper-2:#FFFDF8; --paper-3:#FFFFFF;
+  --ink:#20201C; --ink-soft:#4C4942; --ink-faint:#6E6A5F;
+  --amber-text:#A25F2C; --teal-text:#0B7D73;
+  --rule:#E7E0D1; --rule-2:#D7CDB9;
+  --blue:#2B5A93; --blue-soft:#5E7CA8; --blue-wash:#E8EFF6;
+  --amber:#C77A40; --amber-soft:#D89D52; --amber-wash:#F6EBD8;
+  --green:#45785A; --green-wash:#E7EFE7;
+  --rust:#BC5235; --rust-wash:#F5E5DD;
+  --grid:rgba(43,90,147,.05);
+  --serif:"Fraunces",Georgia,serif;
+  --math:"STIX Two Text","Cambria Math","Times New Roman",serif;
+  --sans:"Hanken Grotesk","STIX Two Text",system-ui,sans-serif;
+  --lab-terra:#b57d4c; --lab-blue:#415a8e; --lab-dark:#20201c;
+  --lab-cream:#faf8f1; --lab-gray:#6579a1; --navy:#0f2244;
+  --r:12px; --rl:16px; --rxl:24px;
+  --sh:0 4px 6px -1px rgba(32,32,28,.08), 0 2px 4px -1px rgba(32,32,28,.05);
+}
+:root{color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);min-height:100vh;line-height:1.65}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px}
+h1,h2,h3,h4,h5{font-family:var(--serif);line-height:1.25;color:var(--blue)}
+h1{font-size:clamp(1.5rem,3.4vw,2.2rem)}
+p{margin-bottom:.7em}
+strong{color:var(--ink);font-weight:600}
+sup,sub{font-size:.72em}
+ul,ol{padding-left:1.5em;margin:8px 0}
+li{margin-bottom:5px}
+/* notación */
+.v{font-family:var(--math);font-style:italic}
+.fn{font-family:var(--math);font-style:normal}
+.op{font-family:var(--math);font-style:normal}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.25;font-family:var(--math);text-align:center}
+.frac .num{padding:0 5px 1px;border-bottom:1.4px solid currentColor}
+.frac .den{padding:1px 5px 0}
+/* marca */
+.lab-name{display:flex;align-items:center;font-family:var(--serif);font-weight:700;letter-spacing:-0.01em;line-height:1.2}
+.lab-name .bullet{width:8px;height:8px;border-radius:50%;background:var(--lab-terra);flex-shrink:0;margin-right:7px}
+.lab-name .lab{color:var(--lab-dark)}
+.lab-name .best{color:var(--lab-terra)}
+.lab-name .ia{color:var(--lab-blue)}
+.lab-sub{color:var(--lab-gray);font-size:11px;font-weight:500;margin-top:1px;padding-left:15px;font-family:var(--sans)}
+.lab-logo{background:var(--lab-cream);padding:8px 18px 7px;border-radius:12px;text-align:left;box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.lab-logo .lab-name{font-size:16px}
+/* encabezado (chrome oficial) */
+.topbar{background:linear-gradient(135deg,var(--navy) 0%,#1a3a6e 100%);color:#e0f2fe;padding:14px 0;position:relative;z-index:1;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.topbar-inner{max-width:1080px;margin:0 auto;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand-inspt{font-size:12px;color:#7dd3fc;letter-spacing:.1em;font-weight:700}
+.brand-title{font-family:var(--serif);font-size:18px;color:#fff;font-weight:700}
+.brand-sub{font-size:12px;color:#bfdbfe}
+.intro{background:linear-gradient(180deg,var(--paper-2) 0%,var(--paper) 100%);padding:30px 0 18px;text-align:center;position:relative;z-index:1}
+.intro-inner{max-width:820px;margin:0 auto;padding:0 20px}
+.intro-badge{display:inline-block;background:var(--blue-wash);color:var(--blue);padding:5px 14px;border-radius:50px;font-size:12px;font-weight:700;letter-spacing:.04em;margin-bottom:14px;text-transform:uppercase}
+.intro-desc{color:var(--ink-soft);font-size:15px;max-width:660px;margin:12px auto 0}
+.tabs-wrap{background:var(--paper-3);border-bottom:1px solid var(--rule);position:sticky;top:env(safe-area-inset-top,0px);z-index:50;box-shadow:0 2px 4px rgba(32,32,28,.04)}
+.tabs-nav{max-width:1080px;margin:0 auto;padding:0 20px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin}
+.tab-btn{background:transparent;border:none;padding:14px 16px;font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink-faint);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.tab-btn:hover{color:var(--blue)}
+.tab-btn.active{color:var(--ink);border-bottom-color:var(--amber)}
+main{max-width:940px;margin:0 auto;padding:28px 20px 60px;position:relative;z-index:1}
+.tab-content{display:none;animation:fadeIn .3s ease}
+.tab-content.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tema-intro{background:linear-gradient(135deg,var(--blue) 0%,#1e4275 100%);color:#fff;border-radius:var(--rxl);padding:24px 28px;margin-bottom:26px;position:relative;overflow:hidden}
+.tema-intro::before{content:'laboratoriobest-IA';position:absolute;right:-20px;bottom:-30px;font-size:88px;font-weight:900;color:rgba(255,255,255,.04);font-family:var(--serif);letter-spacing:-3px;pointer-events:none}
+.tema-title{color:#fff;font-size:1.7rem;margin-bottom:4px}
+.tema-title em{font-style:italic;color:var(--amber-wash)}
+.tema-desc{color:rgba(255,255,255,.75);font-size:14px;margin:0}
+/* tarjeta */
+.ejercicio{background:var(--paper-3);border-radius:var(--rl);padding:26px 28px;margin-bottom:22px;box-shadow:var(--sh);border:1px solid var(--rule);border-top:4px solid var(--ej,var(--blue));position:relative;overflow:hidden}
+.ejercicio::before{content:'';position:absolute;top:-30px;right:-30px;width:180px;height:180px;background:radial-gradient(circle at center,rgba(181,125,76,.06) 0%,rgba(65,90,142,.04) 40%,transparent 70%);pointer-events:none;z-index:0}
+.ejercicio>*{position:relative;z-index:1}
+.ejercicio[data-ej="1"]{--ej:#2B5A93;--ej-soft:#E8EFF6;--ej-border:#b9cde3}
+.ejercicio[data-ej="2"]{--ej:#0d9488;--ej-soft:#f0fdfa;--ej-border:#99f6e4}
+.ejercicio[data-ej="3"]{--ej:#7c3aed;--ej-soft:#f5f3ff;--ej-border:#ddd6fe}
+.ejercicio[data-ej="4"]{--ej:#C77A40;--ej-soft:#F6EBD8;--ej-border:#e3c9a8}
+.ej-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.ej-badge{background:var(--ej,var(--blue));color:#fff;padding:6px 16px;border-radius:30px;font-size:13px;font-weight:700;letter-spacing:.02em}
+.ej-lab{font-family:var(--serif);font-size:12.5px;font-weight:700;display:flex;align-items:center}
+.ej-lab .bullet{width:6px;height:6px;border-radius:50%;background:var(--lab-terra);margin-right:5px}
+.ej-lab .lab{color:var(--lab-dark);opacity:.75}
+.ej-lab .best{color:var(--lab-terra)}
+.ej-lab .ia{color:var(--lab-blue)}
+.ej-enunciado{background:var(--ej-soft,var(--blue-wash));border:1px solid var(--ej-border,var(--rule-2));border-radius:var(--r);padding:14px 18px;margin-bottom:16px;font-size:15px;color:var(--ink-soft)}
+.ej-enunciado .enun-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ej,var(--blue));margin-bottom:5px}
+.clave{background:var(--amber-wash);border:1px solid rgba(199,122,64,.3);border-left:4px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:13px 17px;margin:14px 0;font-size:14.5px;color:var(--ink-soft)}
+.clave .clave-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--amber-text);margin-bottom:5px}
+.errtip{background:var(--rust-wash);border-left:4px solid var(--rust);border-radius:0 var(--r) var(--r) 0;padding:12px 16px;margin:14px 0;font-size:14px;color:var(--ink-soft)}
+.errtip .err-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#A6432A;margin-bottom:4px}
+.step{background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--r);margin-bottom:10px;scroll-margin-top:70px;overflow:hidden}
+.step-header{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;user-select:none}
+.step-badge{background:var(--ej,var(--blue));color:#fff;font-size:11px;font-weight:800;letter-spacing:.05em;padding:4px 11px;border-radius:20px;flex-shrink:0}
+.step-title{font-family:var(--serif);font-size:1.02rem;color:var(--ink);font-weight:600;flex:1}
+.chev{color:var(--ej,var(--blue));font-size:15px;transition:transform .2s;flex-shrink:0}
+.step.open .chev{transform:rotate(180deg)}
+.step-body{display:none;font-size:14.5px;color:var(--ink-soft);padding:14px 18px 16px;border-top:1px solid var(--rule)}
+.step.open .step-body{display:block}
+.math{font-family:var(--math);font-style:normal;color:var(--blue);background:rgba(43,90,147,.05);padding:1px 5px;border-radius:4px;font-size:16px;white-space:nowrap}
+.prop{background:var(--blue-wash);border:1px solid #b9cde3;border-left:4px solid var(--blue);color:var(--ink);padding:13px 18px;margin:12px 0;border-radius:0 var(--r) var(--r) 0;font-family:var(--math);font-size:16px;line-height:1.6}
+.prop .prop-tag{display:block;font-family:var(--sans);font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.prop .pf{display:block;text-align:center;margin:5px 0}
+.prop .pt{display:block;margin:3px 0}
+.w{font-family:var(--sans);font-style:normal;font-size:.86em;color:var(--ink-soft)}
+.calc{background:var(--paper-3);border:1px solid var(--rule);border-left:3px solid var(--blue-soft);padding:10px 14px;margin:10px 0;font-family:var(--math);font-size:16px;color:var(--ink);border-radius:0 8px 8px 0;overflow-x:auto}
+.calc-final{background:var(--ej-soft,var(--blue-wash));border-left:4px solid var(--ej,var(--blue));padding:12px 16px;margin:12px 0;font-family:var(--math);font-weight:600;font-size:17px;color:var(--ink);border-radius:0 8px 8px 0;overflow-x:auto}
+.ans-box{background:linear-gradient(135deg,var(--green-wash) 0%,#f0f7f0 100%);border:2px solid #a7c9b2;border-radius:var(--r);margin-top:18px;overflow:hidden;scroll-margin-top:70px}
+.ans-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 20px;cursor:pointer;user-select:none}
+.ans-header .chev{color:#3A6650}
+.ans-box.open .ans-header .chev{transform:rotate(180deg)}
+.ans-label{color:#3A6650;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.ans-content{display:none;color:#2e5540;font-size:14.5px;padding:0 20px 16px}
+.ans-box.open .ans-content{display:block}
+.ans-content .math{color:#2e5540;background:rgba(69,120,90,.08)}
+/* figuras */
+.fig{background:var(--paper-2);border:1px solid var(--rule);border-radius:var(--r);margin:14px 0;overflow:hidden}
+.fig svg,.fig canvas{width:100%;display:block}
+.fig svg text.fl{font-family:"Hanken Grotesk","STIX Two Text",sans-serif;font-weight:600;paint-order:stroke;stroke:#FFFDF8;stroke-width:4px;stroke-linejoin:round}
+.fig svg g{transition:opacity .25s}
+.fig-ctrl{display:flex;gap:14px;padding:9px 14px;background:var(--paper);border-top:1px solid var(--rule);flex-wrap:wrap;align-items:center}
+.fig-ctrl label{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ink-soft);cursor:pointer}
+input[type=checkbox],input[type=range]{accent-color:var(--blue)}
+.fig-leg{display:flex;gap:14px;flex-wrap:wrap;padding:7px 14px;font-size:12.5px;color:var(--ink-faint);border-top:1px solid var(--rule)}
+.leg{display:flex;align-items:center;gap:5px}
+.leg i{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+.slider-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%}
+.slider-row label{min-width:120px}
+.slider-row input{flex:1;min-width:120px}
+.minibtn{border:1.5px solid var(--rule);background:var(--paper-3);border-radius:8px;padding:6px 14px;font-size:13px;font-family:var(--sans);cursor:pointer;color:var(--ink-soft)}
+.minibtn:hover{border-color:var(--amber);color:var(--amber-text)}
+.readout{padding:10px 14px;background:var(--paper-3);border-top:1px solid var(--rule)}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;padding:4px 0;border-bottom:1px dashed var(--rule)}
+.kv b{font-family:var(--math);font-weight:600;color:var(--ink);text-align:right}
+.state-pill{display:inline-block;padding:5px 13px;border-radius:20px;font-size:12.5px;font-weight:700;margin-top:8px}
+.state-ok{background:var(--green-wash);color:#3A6650;border:1px solid #a7c9b2}
+.state-no{background:var(--rust-wash);color:#A6432A;border:1px solid #d9a898}
+.state-info{background:var(--blue-wash);color:var(--blue);border:1px solid #b9cde3}
+/* mini-test */
+.mini-test{background:var(--blue-wash);border:1px solid rgba(43,90,147,.16);border-radius:var(--r);padding:17px 19px;margin-top:16px}
+.mini-test h4{font-size:.95rem;margin-bottom:9px}
+.mini-test .mt-q{font-size:14px;color:var(--ink-soft);margin-bottom:11px}
+.opts{list-style:none;display:flex;flex-direction:column;gap:7px;padding:0}
+.opts li{margin:0}
+.opt{width:100%;text-align:left;padding:9px 13px;background:var(--paper-3);border:1.5px solid var(--rule);border-radius:8px;font-family:var(--sans);font-size:13.5px;cursor:pointer;transition:all .16s;color:var(--ink-soft)}
+.opt:hover{border-color:var(--blue);background:var(--paper-2)}
+.opt.ok{background:var(--green-wash);border-color:var(--green);color:#3A6650}
+.opt.bad{background:var(--rust-wash);border-color:var(--rust);color:#A6432A}
+.test-fb{margin-top:10px;padding:9px 13px;border-radius:8px;font-size:13.5px;display:none}
+.test-fb.show{display:block}
+.test-fb.ok{background:var(--green-wash);color:#3A6650;border:1px solid #a7c9b2}
+.test-fb.bad{background:var(--rust-wash);color:#A6432A;border:1px solid #d9a898}
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:14px 0 18px}
+.cnode{background:var(--paper-2);border:1px solid var(--rule);border-radius:10px;padding:13px 11px;text-align:center;cursor:pointer;transition:box-shadow .18s,transform .18s}
+.cnode:hover{box-shadow:0 4px 16px rgba(43,90,147,.12);transform:translateY(-2px)}
+.cnode .ic{font-size:1.25rem;margin-bottom:5px}
+.cnode .lb{font-size:13px;font-weight:500;color:var(--ink-soft);line-height:1.4}
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px;margin:16px 0}
+.sum-card{background:var(--paper-3);border:1px solid var(--rule);border-radius:10px;padding:14px;box-shadow:var(--sh)}
+.sum-card .ic{font-size:1.15rem;margin-bottom:5px}
+.sum-card h4{font-size:.9rem;margin-bottom:5px}
+.sum-card p{font-size:13px;color:var(--ink-soft);line-height:1.55;margin:0}
+.section-h{font-family:var(--serif);font-size:1.2rem;font-weight:700;color:var(--blue);margin:22px 0 8px}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0}
+table.cmp th,table.cmp td{border:1px solid var(--rule);padding:8px 10px;text-align:left}
+table.cmp th{background:var(--blue-wash);color:var(--blue);font-family:var(--serif);font-size:13px}
+.btn-print{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:none;background:var(--blue);color:#fff;font-family:var(--sans);font-size:14px;font-weight:500;cursor:pointer}
+.btn-print:hover{background:#1e4275}
+.barra-final{margin:30px 0 6px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;border-top:1px solid var(--rule);padding-top:18px}
+.btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:1.5px solid var(--rule-2);background:var(--paper-3);color:var(--ink-soft);font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber-text)}
+.btn-ghost:focus-visible,.minibtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.barra-nota{flex:1 1 260px;margin:0;font-size:12.5px;color:var(--ink-faint);line-height:1.5}
+/* pie (chrome oficial) */
+.site-footer{background:var(--navy);color:#cbd5e1;padding:30px 0 24px;margin-top:40px;position:relative;z-index:1}
+.footer-inner{max-width:1080px;margin:0 auto;padding:0 20px;text-align:center}
+.footer-quote{font-family:var(--serif);font-style:italic;font-size:1.1rem;color:#e0f2fe;margin-bottom:12px}
+.footer-coaut{font-size:13px;color:#cbd5e1;margin-bottom:14px}
+.footer-lab{display:inline-block;background:var(--lab-cream);padding:10px 22px 9px;border-radius:12px;text-align:left;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.footer-lab .lab-name{font-size:17px}
+.footer-lab .lab-sub{font-size:12px}
+.step-header:focus-visible,.ans-header:focus-visible,.cnode:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (max-width:640px){
+  .topbar-inner{justify-content:center;text-align:center}
+  .ejercicio{padding:18px 14px}
+  .step-header{padding:11px 12px}
+  .step-body{padding:12px 12px 14px}
+  .tema-intro{padding:18px 20px}
+  .tema-title{font-size:1.3rem}
+  .tab-btn{padding:12px 11px;font-size:12.5px}
+  .math{white-space:normal}
+  .fig svg text.fl{font-size:24px!important;stroke-width:6px}
+}
+@media print{
+  .tabs-wrap,.fig-ctrl,.btn-print,.barra-final{display:none!important}
+  .tab-content{display:block!important}
+  .step-body,.ans-content{display:block!important}
+  body::before{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div>
+        <div class="brand-inspt">I·N·S·P·T &nbsp;·&nbsp; UTN</div>
+        <div class="brand-title">Resoluciones · TP 8 Transformaciones proyectivas entre haces</div>
+        <div class="brand-sub">Geometría II</div>
+      </div>
+    </div>
+    <div class="lab-logo">
+      <div class="lab-name"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+      <div class="lab-sub">Prof. Ariel L. Cardozo Delgado</div>
+    </div>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="intro-inner">
+    <div class="intro-badge">📐 TP 8 · Ejercicios 1 a 4</div>
+    <h1>Perspectividad entre haces de rectas, paso a paso</h1>
+    <p class="intro-desc">Cuatro preguntas sobre la misma transformación: la imagen de una recta cualquiera, la de una paralela al eje, la de la recta que une los vértices, y por qué la razón doble no cambia.</p>
+  </div>
+</section>
+
+<div class="tabs-wrap">
+  <div class="tabs-nav" role="tablist" aria-label="Secciones">
+    <button class="tab-btn active" role="tab" data-tab="inicio">🏠 Inicio</button>
+    <button class="tab-btn" role="tab" data-tab="e1">E1 · ρ(r)</button>
+    <button class="tab-btn" role="tab" data-tab="e2">E2 · v ∥ e</button>
+    <button class="tab-btn" role="tab" data-tab="e3">E3 · ρ(OO′)</button>
+    <button class="tab-btn" role="tab" data-tab="e4">E4 · Razón doble</button>
+    <button class="tab-btn" role="tab" data-tab="resumen">📋 Resumen</button>
+  </div>
+</div>
+
+<main id="main-content">
+
+<!-- ================= INICIO ================= -->
+<section class="tab-content active" role="tabpanel" data-tab="inicio">
+  <div class="tema-intro">
+    <h2 class="tema-title">TP 8 · <em>transformaciones proyectivas entre haces</em></h2>
+    <p class="tema-desc">Los cuatro ejercicios parten del mismo dato: una perspectividad de eje e entre el haz de O y el haz de O′.</p>
+  </div>
+
+  <div class="ejercicio" data-ej="1">
+    <div class="ej-header">
+      <span class="ej-badge">El dato común</span>
+      <span class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></span>
+    </div>
+
+    <div class="ej-enunciado">
+      <div class="enun-label">Dada la perspectividad</div>
+      <div style="text-align:center;font-family:var(--math);font-size:17px"><span class="v">ρ</span> : <span class="fn">haz</span><sub><span class="v">O</span></sub> ⟶ <span class="fn">haz</span><sub><span class="v">O′</span></sub> (<span class="v">e</span>) &nbsp;<span class="w">tal que</span>&nbsp; <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O</span></sub> ∧ <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O′</span></sub></div>
+    </div>
+
+    <h3 class="section-h">Los cuatro pedidos</h3>
+    <div class="concept-grid">
+      <div class="cnode" data-goto="e1"><div class="ic">✂️</div><div class="lb"><b>E1</b> · hallar <span class="v">ρ</span>(<span class="v">r</span>)</div></div>
+      <div class="cnode" data-goto="e2"><div class="ic">∥</div><div class="lb"><b>E2</b> · hallar <span class="v">ρ</span>(<span class="v">v</span>) con <span class="v">v</span> ∥ <span class="v">e</span></div></div>
+      <div class="cnode" data-goto="e3"><div class="ic">🔁</div><div class="lb"><b>E3</b> · hallar <span class="v">ρ</span>(<span class="v">OO</span>′)</div></div>
+      <div class="cnode" data-goto="e4"><div class="ic">🔢</div><div class="lb"><b>E4</b> · verificar que se conservan las razones dobles</div></div>
+    </div>
+
+    <h3 class="section-h">Herramientas mínimas</h3>
+
+    <div class="prop"><span class="prop-tag">Definición · perspectividad de eje e entre haces</span>
+      <span class="pf"><span class="v">r</span> ∈ <span class="fn">haz</span><sub><span class="v">O</span></sub> ⟹ <span class="v">ρ</span>(<span class="v">r</span>) = <span class="v">r</span>′ = <span class="v">O</span>′<span class="v">R</span> &nbsp;<span class="w">con</span>&nbsp; <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span></span>
+      <span class="pt"><span class="w">Primero se corta con el eje; después se une con el otro vértice. La condición <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O</span></sub> ∧ <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O′</span></sub> equivale a <span class="v">O</span> ∉ <span class="v">e</span> y <span class="v">O</span>′ ∉ <span class="v">e</span>.</span></span>
+    </div>
+
+    <div class="prop"><span class="prop-tag">Plano proyectivo · rectas paralelas</span>
+      <span class="pt">Dos rectas paralelas se cortan en su <b>punto impropio</b> común, que representa su dirección. Por un punto propio <span class="v">P</span> y un punto impropio <span class="v">E</span><sub>∞</sub> pasa una única recta: la paralela a esa dirección por <span class="v">P</span>.</span>
+    </div>
+
+    <div class="prop"><span class="prop-tag">Razón doble de cuatro puntos alineados</span>
+      <span class="pf">(<span class="v">ABCD</span>) = <span class="frac"><span class="num"><span class="v">CA</span> · <span class="v">DB</span></span><span class="den"><span class="v">CB</span> · <span class="v">DA</span></span></span></span>
+    </div>
+
+    <div class="prop"><span class="prop-tag">Razón doble de cuatro rectas de un haz</span>
+      <span class="pf">(<span class="v">abcd</span>) = (<span class="v">ABCD</span>) &nbsp;<span class="w">con</span>&nbsp; <span class="v">A</span> = <span class="v">a</span> ∩ <span class="v">t</span>, <span class="v">B</span> = <span class="v">b</span> ∩ <span class="v">t</span>, <span class="v">C</span> = <span class="v">c</span> ∩ <span class="v">t</span>, <span class="v">D</span> = <span class="v">d</span> ∩ <span class="v">t</span></span>
+      <span class="pt"><span class="w"><span class="v">t</span> es una transversal cualquiera que no pasa por el vértice del haz; el valor no depende de cuál se elija.</span></span>
+    </div>
+
+    <div class="clave">
+      <div class="clave-label">🔑 Hilo conductor</div>
+      Toda la guía se resuelve con la misma frase: <b>la homóloga de una recta pasa por O′ y por el punto donde esa recta corta al eje</b>. E1 la aplica tal cual; E2 y E3 la aplican en los dos casos que parecen excepciones —el corte con el eje es impropio, o la recta ya pasa por O′—; E4 descubre que el eje es una transversal compartida por los dos haces.
+    </div>
+
+    <div class="errtip">
+      <div class="err-label">⚠ Confusión frecuente</div>
+      Confundir el eje <span class="v">e</span> con la recta <span class="v">OO</span>′. El eje <b>no</b> pasa por los vértices; <span class="v">OO</span>′ pasa por los dos. Son objetos distintos con papeles distintos, y el ejercicio 3 muestra cuál es el de <span class="v">OO</span>′.
+    </div>
+  </div>
+</section>
+
+<!-- ================= E1 ================= -->
+<section class="tab-content" role="tabpanel" data-tab="e1">
+  <div class="ejercicio" data-ej="1">
+    <div class="ej-header">
+      <span class="ej-badge">Ejercicio 1</span>
+      <span class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></span>
+    </div>
+    <div class="ej-enunciado">
+      <div class="enun-label">Enunciado</div>
+      Dada la perspectividad &nbsp;<span class="math"><span class="v">ρ</span> : <span class="fn">haz</span><sub><span class="v">O</span></sub> ⟶ <span class="fn">haz</span><sub><span class="v">O′</span></sub> (<span class="v">e</span>) / <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O</span></sub> ∧ <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O′</span></sub></span>, hallar <span class="math"><span class="v">ρ</span>(<span class="v">r</span>)</span>.
+    </div>
+
+    <div class="clave">
+      <div class="clave-label">🔑 Clave del razonamiento</div>
+      <span class="v">r</span> es una recta del haz de <span class="v">O</span>: ya pasa por <span class="v">O</span>. La imagen tiene que pasar por <span class="v">O</span>′, y para fijarla falta un segundo punto. Ese punto lo da el eje: <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span>. Cortar y unir, en ese orden.
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 620 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Figura del ejercicio 1: vértices O y O′, eje e, recta r, punto R = r ∩ e y recta homóloga r′ = O′R"><rect width="620" height="380" fill="#FFFDF8"/><defs><pattern id="g-f1" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="rgba(43,90,147,.06)" stroke-width="1"/></pattern><marker id="ar-f1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c3aed"/></marker></defs><rect width="620" height="380" fill="url(#g-f1)"/>
+<line x1="203.8" y1="380.0" x2="393.8" y2="0.0" stroke="#7c3aed" stroke-width="2.6"/>
+<line x1="0.0" y1="305.9" x2="611.8" y2="0.0" stroke="#2B5A93" stroke-width="2.4"/>
+<circle cx="97.6" cy="257.1" r="6" fill="#2B5A93" stroke="#fff" stroke-width="1.2"/>
+<text x="89.6" y="277.1" fill="#2B5A93" text-anchor="end" class="fl" style="font-size:13px">O</text>
+<circle cx="432.9" cy="257.1" r="6" fill="#0d9488" stroke="#fff" stroke-width="1.2"/>
+<text x="442.9" y="277.1" fill="#0d9488" text-anchor="start" class="fl" style="font-size:13px">O′</text>
+<text x="304.4" y="55.9" fill="#7c3aed" text-anchor="start" class="fl" style="font-style:italic;font-size:15px">e</text>
+<text x="533.5" y="55.9" fill="#2B5A93" text-anchor="start" class="fl" style="font-style:italic;font-size:15px">r</text>
+<g id="f1-img"><line x1="555.9" y1="380.0" x2="175.9" y2="0.0" stroke="#0d9488" stroke-width="2.4"/>
+<text x="153.5" y="16.8" fill="#0d9488" text-anchor="start" class="fl" style="font-size:14px">r′ = ρ(r)</text></g>
+<g id="f1-R"><circle cx="321.2" cy="145.3" r="5.5" fill="#C77A40" stroke="#fff" stroke-width="1.2"/>
+<text x="333.2" y="149.3" fill="#C77A40" text-anchor="start" class="fl" style="font-size:13px">R = r ∩ e</text></g></svg>
+      <div class="fig-ctrl">
+        <label><input type="checkbox" class="tgl" data-target="f1-R" checked> punto <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span></label>
+        <label><input type="checkbox" class="tgl" data-target="f1-img" checked> recta homóloga <span class="v">r</span>′</label>
+      </div>
+      <div class="fig-leg">
+        <span class="leg"><i style="background:#2B5A93"></i> haz de <span class="v">O</span> · recta <span class="v">r</span></span>
+        <span class="leg"><i style="background:#0d9488"></i> haz de <span class="v">O</span>′ · recta <span class="v">r</span>′</span>
+        <span class="leg"><i style="background:#7c3aed"></i> eje <span class="v">e</span></span>
+        <span class="leg"><i style="background:#C77A40"></i> punto <span class="v">R</span></span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 1</span><span class="step-title">¿Qué se sabe de <span class="v">r</span> y qué se le pide a <span class="v">r</span>′?</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p><b>Datos.</b> <span class="v">r</span> ∈ <span class="fn">haz</span><sub><span class="v">O</span></sub>, es decir <span class="v">O</span> ∈ <span class="v">r</span>. El eje cumple <span class="v">O</span> ∉ <span class="v">e</span> y <span class="v">O</span>′ ∉ <span class="v">e</span>.</p>
+        <p><b>Lo pedido.</b> La recta <span class="v">r</span>′ = <span class="v">ρ</span>(<span class="v">r</span>) pertenece al haz de <span class="v">O</span>′: ya tenemos un punto suyo, <span class="v">O</span>′. Una recta queda determinada por dos puntos distintos, así que falta exactamente uno.</p>
+        <div class="calc-final"><span class="v">O</span>′ ∈ <span class="v">r</span>′ &nbsp;— falta un segundo punto</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 2</span><span class="step-title">Construcción: cortar con el eje, unir con <span class="v">O</span>′</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <div class="prop"><span class="prop-tag">Definición que se aplica</span>
+          <span class="pf"><span class="v">ρ</span>(<span class="v">r</span>) = <span class="v">O</span>′<span class="v">R</span> &nbsp;<span class="w">con</span>&nbsp; <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span></span>
+        </div>
+        <ol>
+          <li>Marcar <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span>.</li>
+          <li>Trazar la recta que une <span class="v">O</span>′ con <span class="v">R</span>.</li>
+        </ol>
+        <div class="calc-final"><span class="v">r</span>′ = <span class="v">O</span>′<span class="v">R</span>, &nbsp;<span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 3</span><span class="step-title">Justificación: ¿por qué <span class="v">R</span> existe y <span class="v">O</span>′<span class="v">R</span> es una recta?</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p><b><span class="v">R</span> es un único punto.</b> Las rectas <span class="v">r</span> y <span class="v">e</span> son distintas, porque <span class="v">O</span> ∈ <span class="v">r</span> y <span class="v">O</span> ∉ <span class="v">e</span>. En el plano proyectivo dos rectas distintas se cortan en exactamente un punto.</p>
+        <p><b><span class="v">O</span>′<span class="v">R</span> es una única recta.</b> <span class="v">R</span> ∈ <span class="v">e</span> y <span class="v">O</span>′ ∉ <span class="v">e</span>, luego <span class="v">O</span>′ ≠ <span class="v">R</span>. Dos puntos distintos determinan exactamente una recta.</p>
+        <p><b><span class="v">r</span>′ pertenece al haz de <span class="v">O</span>′</b>, porque pasa por <span class="v">O</span>′. ∎</p>
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">r</span>) existe y es única</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 4</span><span class="step-title">Verificación en la figura</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>La figura usa <span class="v">O</span> = (0 ; 0), <span class="v">O</span>′ = (6 ; 0) y el eje <span class="v">e</span> : 2<span class="v">x</span> − <span class="v">y</span> − 6 = 0, que no pasa por ninguno de los dos vértices (2 · 0 − 0 − 6 = −6 ≠ 0 y 2 · 6 − 0 − 6 = 6 ≠ 0).</p>
+        <div class="calc"><span class="v">r</span> : <span class="v">y</span> = <span class="frac"><span class="num">1</span><span class="den">2</span></span> <span class="v">x</span> &nbsp;⟹&nbsp; <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span>: &nbsp;2<span class="v">x</span> − <span class="frac"><span class="num">1</span><span class="den">2</span></span> <span class="v">x</span> = 6 &nbsp;⟹&nbsp; <span class="v">x</span> = 4, &nbsp;<span class="v">R</span> = (4 ; 2)</div>
+        <div class="calc"><span class="v">r</span>′ = <span class="v">O</span>′<span class="v">R</span>: &nbsp;pendiente <span class="frac"><span class="num">2 − 0</span><span class="den">4 − 6</span></span> = −1 &nbsp;⟹&nbsp; <span class="v">r</span>′ : <span class="v">x</span> + <span class="v">y</span> − 6 = 0</div>
+        <p>Comprobación: <span class="v">O</span>′ = (6 ; 0) cumple 6 + 0 − 6 = 0 y <span class="v">R</span> = (4 ; 2) cumple 4 + 2 − 6 = 0. Las dos pertenencias se verificaron con aritmética exacta.</p>
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">r</span>) : <span class="v">x</span> + <span class="v">y</span> − 6 = 0 &nbsp;(en las coordenadas de la figura)</div>
+      </div>
+    </div>
+
+    <div class="fig">
+      <canvas id="cv-e1" width="900" height="500" role="img" aria-label="Laboratorio: girar la recta r del haz de O y ver su homóloga">Laboratorio: girar la recta r del haz de O y ver su homóloga.</canvas>
+      <div class="fig-ctrl">
+        <div class="slider-row">
+          <label for="sl-e1">🧪 Girar <span class="v">r</span></label>
+          <input type="range" id="sl-e1" data-lab="e1" min="0" max="179.5" step="0.5" value="26.5">
+        </div>
+        <button class="minibtn" data-lab="e1" data-ang="63.4349488">llevar <span class="v">r</span> paralela a <span class="v">e</span></button>
+        <button class="minibtn" data-lab="e1" data-ang="0">llevar <span class="v">r</span> hasta <span class="v">OO</span>′</button>
+        <button class="minibtn" data-reset="e1">↺ reiniciar</button>
+      </div>
+      <div class="readout" id="ro-e1"></div>
+    </div>
+
+    <div class="ans-box">
+      <div class="ans-header"><span class="ans-label">✓ Respuesta final y cantidad de soluciones</span><span class="chev">▾</span></div>
+      <div class="ans-content">
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">r</span>) = <span class="v">O</span>′<span class="v">R</span>, &nbsp;con <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span></div>
+        <p><b>Cantidad de soluciones:</b> una sola. <span class="v">R</span> es único porque <span class="v">r</span> ≠ <span class="v">e</span>, y la recta <span class="v">O</span>′<span class="v">R</span> es única porque <span class="v">O</span>′ ≠ <span class="v">R</span>. La respuesta vale para toda recta del haz; los dos casos que parecen escaparse —<span class="v">r</span> paralela al eje y <span class="v">r</span> = <span class="v">OO</span>′— son los ejercicios 2 y 3, y la misma regla los resuelve.</p>
+      </div>
+    </div>
+
+    <div class="errtip">
+      <div class="err-label">⚠ Error típico</div>
+      Invertir el orden: intentar «unir <span class="v">O</span>′ con <span class="v">r</span>». <span class="v">O</span>′ es un punto y <span class="v">r</span> es una recta; no hay nada que unir. Otro clásico es cortar <span class="v">r</span> con <span class="v">OO</span>′ en lugar de con el eje: ese punto es <span class="v">O</span> mismo y no aporta nada.
+    </div>
+
+    <div class="mini-test">
+      <h4>🧠 Mini-test E1</h4>
+      <p class="mt-q">¿Cuál es la construcción de <span class="v">ρ</span>(<span class="v">r</span>)?</p>
+      <ul class="opts" data-test="t1" data-correct="1">
+        <li><button class="opt" data-i="0">La paralela a <span class="v">r</span> por <span class="v">O</span>′.</button></li>
+        <li><button class="opt" data-i="1"><span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span> y después la recta <span class="v">O</span>′<span class="v">R</span>.</button></li>
+        <li><button class="opt" data-i="2"><span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">OO</span>′ y después la recta <span class="v">O</span>′<span class="v">R</span>.</button></li>
+      </ul>
+      <div class="test-fb" data-fb="t1"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= E2 ================= -->
+<section class="tab-content" role="tabpanel" data-tab="e2">
+  <div class="ejercicio" data-ej="2">
+    <div class="ej-header">
+      <span class="ej-badge">Ejercicio 2</span>
+      <span class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></span>
+    </div>
+    <div class="ej-enunciado">
+      <div class="enun-label">Enunciado</div>
+      Dada la perspectividad &nbsp;<span class="math"><span class="v">ρ</span> : <span class="fn">haz</span><sub><span class="v">O</span></sub> ⟶ <span class="fn">haz</span><sub><span class="v">O′</span></sub> (<span class="v">e</span>) / <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O</span></sub> ∧ <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O′</span></sub></span>, hallar <span class="math"><span class="v">ρ</span>(<span class="v">v</span>) / <span class="v">v</span> ∥ <span class="v">e</span></span>.
+    </div>
+
+    <div class="clave">
+      <div class="clave-label">🔑 Clave del razonamiento</div>
+      En el plano euclídeo <span class="v">v</span> no corta al eje y la regla parece no aplicarse. En el plano proyectivo sí lo corta: en el <b>punto impropio</b> de <span class="v">e</span>. Unir <span class="v">O</span>′ con ese punto es trazar por <span class="v">O</span>′ la recta con la dirección del eje.
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 620 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Figura del ejercicio 2: la recta v paralela al eje, y su homóloga por O′, también paralela al eje"><rect width="620" height="380" fill="#FFFDF8"/><defs><pattern id="g-f2" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="rgba(43,90,147,.06)" stroke-width="1"/></pattern><marker id="ar-f2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c3aed"/></marker></defs><rect width="620" height="380" fill="url(#g-f2)"/>
+<line x1="217.6" y1="380.0" x2="407.6" y2="0.0" stroke="#7c3aed" stroke-width="2.6"/>
+<line x1="63.5" y1="380.0" x2="253.5" y2="0.0" stroke="#2B5A93" stroke-width="2.4"/>
+<line x1="0.0" y1="246.5" x2="620.0" y2="246.5" stroke="#9c9384" stroke-width="1.2" stroke-dasharray="5 4"/>
+<circle cx="130.3" cy="246.5" r="6" fill="#2B5A93" stroke="#fff" stroke-width="1.2"/>
+<text x="121.3" y="264.5" fill="#2B5A93" text-anchor="end" class="fl" style="font-size:13px">O</text>
+<circle cx="438.4" cy="246.5" r="6" fill="#0d9488" stroke="#fff" stroke-width="1.2"/>
+<text x="448.4" y="266.5" fill="#0d9488" text-anchor="start" class="fl" style="font-size:13px">O′</text>
+<text x="263.8" y="41.1" fill="#2B5A93" text-anchor="start" class="fl" style="font-style:italic;font-size:15px">v</text>
+<text x="371.6" y="41.1" fill="#7c3aed" text-anchor="start" class="fl" style="font-style:italic;font-size:15px">e</text>
+<text x="58.4" y="261.9" fill="#9c9384" text-anchor="start" class="fl" style="font-size:12px">OO′</text>
+<g id="f2-img"><line x1="371.6" y1="380.0" x2="561.6" y2="0.0" stroke="#0d9488" stroke-width="2.4"/>
+<text x="505.1" y="92.4" fill="#0d9488" text-anchor="start" class="fl" style="font-size:14px">ρ(v)</text></g>
+<g id="f2-inf"><line x1="155.9" y1="195.1" x2="181.6" y2="143.8" stroke="#7c3aed" stroke-width="1.6" marker-end="url(#ar-f2)" opacity=".8"/>
+<line x1="335.7" y1="143.8" x2="361.4" y2="92.4" stroke="#7c3aed" stroke-width="1.6" marker-end="url(#ar-f2)" opacity=".8"/>
+<line x1="464.1" y1="195.1" x2="489.7" y2="143.8" stroke="#7c3aed" stroke-width="1.6" marker-end="url(#ar-f2)" opacity=".8"/>
+<text x="58.4" y="20.5" fill="#7c3aed" text-anchor="start" class="fl" style="font-size:13px">hacia E∞ = v ∩ e</text></g></svg>
+      <div class="fig-ctrl">
+        <label><input type="checkbox" class="tgl" data-target="f2-inf" checked> dirección común (punto impropio)</label>
+        <label><input type="checkbox" class="tgl" data-target="f2-img" checked> recta homóloga <span class="v">ρ</span>(<span class="v">v</span>)</label>
+      </div>
+      <div class="fig-leg">
+        <span class="leg"><i style="background:#2B5A93"></i> recta <span class="v">v</span> del haz de <span class="v">O</span></span>
+        <span class="leg"><i style="background:#0d9488"></i> <span class="v">ρ</span>(<span class="v">v</span>) en el haz de <span class="v">O</span>′</span>
+        <span class="leg"><i style="background:#7c3aed"></i> eje <span class="v">e</span> y su dirección</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 1</span><span class="step-title">¿Dónde corta <span class="v">v</span> al eje?</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <div class="prop"><span class="prop-tag">Propiedad que se aplica</span>
+          <span class="pt">En el plano proyectivo dos rectas paralelas distintas se cortan en su punto impropio común.</span>
+        </div>
+        <p><span class="v">v</span> ∥ <span class="v">e</span> y <span class="v">v</span> ≠ <span class="v">e</span> (porque <span class="v">O</span> ∈ <span class="v">v</span> y <span class="v">O</span> ∉ <span class="v">e</span>). Llamemos <span class="v">E</span><sub>∞</sub> al punto impropio de <span class="v">e</span>:</p>
+        <div class="calc-final"><span class="v">R</span> = <span class="v">v</span> ∩ <span class="v">e</span> = <span class="v">E</span><sub>∞</sub></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 2</span><span class="step-title">Construcción: unir <span class="v">O</span>′ con <span class="v">E</span><sub>∞</sub></span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>La definición se aplica sin ningún cambio: <span class="v">ρ</span>(<span class="v">v</span>) = <span class="v">O</span>′<span class="v">E</span><sub>∞</sub>.</p>
+        <p>La recta que une un punto propio con un punto impropio es la que pasa por el punto propio con la dirección que representa el impropio. Entonces:</p>
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">v</span>) = paralela a <span class="v">e</span> por <span class="v">O</span>′</div>
+        <p>Con regla y escuadra: se traza por <span class="v">O</span>′ la paralela al eje.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 3</span><span class="step-title">Justificación y consecuencia: <span class="v">v</span>, <span class="v">e</span> y <span class="v">ρ</span>(<span class="v">v</span>) son paralelas</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p><b>Existencia y unicidad.</b> <span class="v">E</span><sub>∞</sub> es único (paso 1) y <span class="v">O</span>′ ≠ <span class="v">E</span><sub>∞</sub> porque <span class="v">O</span>′ es propio. Dos puntos distintos determinan una única recta.</p>
+        <p><b>Consecuencia.</b> <span class="v">ρ</span>(<span class="v">v</span>) ∥ <span class="v">e</span> por construcción, y <span class="v">v</span> ∥ <span class="v">e</span> por hipótesis. Por transitividad del paralelismo:</p>
+        <div class="calc"><span class="v">v</span> ∥ <span class="v">e</span> ∥ <span class="v">ρ</span>(<span class="v">v</span>) &nbsp;⟹&nbsp; <span class="v">v</span> ∥ <span class="v">ρ</span>(<span class="v">v</span>)</div>
+        <p>Las tres rectas comparten el punto impropio <span class="v">E</span><sub>∞</sub>: es el «punto de corte» de <span class="v">v</span> con su homóloga, y está sobre el eje, como corresponde a todo par homólogo.</p>
+        <p><b>¿Puede ser <span class="v">ρ</span>(<span class="v">v</span>) = <span class="v">v</span>?</b> Sólo si <span class="v">O</span>′ ∈ <span class="v">v</span>, es decir, si <span class="v">v</span> = <span class="v">OO</span>′. Eso ocurre únicamente cuando <span class="v">OO</span>′ ∥ <span class="v">e</span>, y es el caso límite del ejercicio 3. En general (y en la figura) <span class="v">ρ</span>(<span class="v">v</span>) ≠ <span class="v">v</span>. ∎</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 4</span><span class="step-title">Verificación en la figura</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>Con los mismos datos que en E1 (<span class="v">O</span> = (0 ; 0), <span class="v">O</span>′ = (6 ; 0), <span class="v">e</span> : 2<span class="v">x</span> − <span class="v">y</span> − 6 = 0), la dirección del eje es (1 ; 2).</p>
+        <div class="calc"><span class="v">v</span> : <span class="v">y</span> = 2<span class="v">x</span> &nbsp;(por <span class="v">O</span>, pendiente 2) &nbsp;⟹&nbsp; <span class="v">v</span> ∩ <span class="v">e</span> = punto impropio de dirección (1 ; 2)</div>
+        <div class="calc"><span class="v">ρ</span>(<span class="v">v</span>): por <span class="v">O</span>′ = (6 ; 0) con pendiente 2 &nbsp;⟹&nbsp; <span class="v">y</span> = 2<span class="v">x</span> − 12</div>
+        <p>En coordenadas homogéneas, <span class="v">v</span> ∩ <span class="v">e</span> = (1 : 2 : 0), con tercera coordenada nula: es impropio. Se comprobó con aritmética exacta que <span class="v">ρ</span>(<span class="v">v</span>) pasa por <span class="v">O</span>′ y es paralela a <span class="v">v</span> y a <span class="v">e</span> sin coincidir con <span class="v">v</span>.</p>
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">v</span>) : <span class="v">y</span> = 2<span class="v">x</span> − 12 &nbsp;(en las coordenadas de la figura)</div>
+      </div>
+    </div>
+
+    <div class="fig">
+      <canvas id="cv-e2" width="900" height="500" role="img" aria-label="Laboratorio: acercar la recta r a la dirección del eje">Laboratorio: acercar la recta r a la dirección del eje.</canvas>
+      <div class="fig-ctrl">
+        <div class="slider-row">
+          <label for="sl-e2">🧪 Girar <span class="v">r</span></label>
+          <input type="range" id="sl-e2" data-lab="e2" min="0" max="179.5" step="0.5" value="55">
+        </div>
+        <button class="minibtn" data-lab="e2" data-ang="63.4349488">llevar <span class="v">r</span> paralela a <span class="v">e</span></button>
+        <button class="minibtn" data-reset="e2">↺ reiniciar</button>
+      </div>
+      <div class="readout" id="ro-e2"></div>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-faint)">Acercá <span class="v">r</span> a la dirección del eje: <span class="v">R</span> se va lejos sobre <span class="v">e</span>, y <span class="v">r</span>′ se va inclinando hasta quedar paralela al eje. La posición límite es justamente la respuesta.</p>
+
+    <div class="ans-box">
+      <div class="ans-header"><span class="ans-label">✓ Respuesta final y cantidad de soluciones</span><span class="chev">▾</span></div>
+      <div class="ans-content">
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">v</span>) = <span class="v">O</span>′<span class="v">E</span><sub>∞</sub> = paralela a <span class="v">e</span> por <span class="v">O</span>′</div>
+        <p><b>Cantidad de soluciones:</b> una sola. En el haz de <span class="v">O</span> hay una única recta <span class="v">v</span> paralela al eje, y su homóloga es la única recta del haz de <span class="v">O</span>′ paralela al eje. Las tres rectas <span class="v">v</span>, <span class="v">e</span>, <span class="v">ρ</span>(<span class="v">v</span>) son paralelas.</p>
+      </div>
+    </div>
+
+    <div class="errtip">
+      <div class="err-label">⚠ Error típico</div>
+      Responder «<span class="v">ρ</span>(<span class="v">v</span>) no existe porque <span class="v">v</span> no corta al eje». Eso es razonar en el plano euclídeo. La perspectividad es una biyección entre haces completos del plano proyectivo: ninguna recta del haz se queda sin imagen.
+    </div>
+
+    <div class="mini-test">
+      <h4>🧠 Mini-test E2</h4>
+      <p class="mt-q">Si <span class="v">v</span> ∈ <span class="fn">haz</span><sub><span class="v">O</span></sub> es paralela al eje, ¿qué es <span class="v">ρ</span>(<span class="v">v</span>)?</p>
+      <ul class="opts" data-test="t2" data-correct="2">
+        <li><button class="opt" data-i="0">No existe: <span class="v">v</span> no corta al eje.</button></li>
+        <li><button class="opt" data-i="1">La recta <span class="v">O</span>′<span class="v">O</span>.</button></li>
+        <li><button class="opt" data-i="2">La paralela al eje por <span class="v">O</span>′.</button></li>
+      </ul>
+      <div class="test-fb" data-fb="t2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= E3 ================= -->
+<section class="tab-content" role="tabpanel" data-tab="e3">
+  <div class="ejercicio" data-ej="3">
+    <div class="ej-header">
+      <span class="ej-badge">Ejercicio 3</span>
+      <span class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></span>
+    </div>
+    <div class="ej-enunciado">
+      <div class="enun-label">Enunciado</div>
+      Dada la perspectividad &nbsp;<span class="math"><span class="v">ρ</span> : <span class="fn">haz</span><sub><span class="v">O</span></sub> ⟶ <span class="fn">haz</span><sub><span class="v">O′</span></sub> (<span class="v">e</span>) / <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O</span></sub> ∧ <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O′</span></sub></span>, hallar <span class="math"><span class="v">ρ</span>(<span class="v">OO</span>′)</span>.
+    </div>
+
+    <div class="clave">
+      <div class="clave-label">🔑 Clave del razonamiento</div>
+      <span class="v">OO</span>′ es la única recta que pertenece a los dos haces. Al aplicarle la regla, el punto de corte con el eje cae sobre ella misma, y la recta que lo une con <span class="v">O</span>′ es otra vez <span class="v">OO</span>′.
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 620 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Figura del ejercicio 3: la recta OO′ corta al eje en R₀ y su homóloga O′R₀ vuelve a ser OO′"><rect width="620" height="360" fill="#FFFDF8"/><defs><pattern id="g-f3" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="rgba(43,90,147,.06)" stroke-width="1"/></pattern><marker id="ar-f3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c3aed"/></marker></defs><rect width="620" height="360" fill="url(#g-f3)"/>
+<line x1="208.8" y1="360.0" x2="388.8" y2="0.0" stroke="#7c3aed" stroke-width="2.6"/>
+<line x1="0.0" y1="225.0" x2="620.0" y2="225.0" stroke="#45785A" stroke-width="3.2"/>
+<circle cx="107.5" cy="225.0" r="6" fill="#2B5A93" stroke="#fff" stroke-width="1.2"/>
+<text x="99.5" y="247.0" fill="#2B5A93" text-anchor="end" class="fl" style="font-size:13px">O</text>
+<circle cx="445.0" cy="225.0" r="6" fill="#0d9488" stroke="#fff" stroke-width="1.2"/>
+<text x="455.0" y="247.0" fill="#0d9488" text-anchor="start" class="fl" style="font-size:13px">O′</text>
+<text x="405.6" y="22.5" fill="#7c3aed" text-anchor="start" class="fl" style="font-style:italic;font-size:15px">e</text>
+<text x="501.2" y="208.1" fill="#45785A" text-anchor="start" class="fl" style="font-size:14px">OO′ = ρ(OO′)</text>
+<g id="f3-img"><line x1="0.0" y1="225.0" x2="620.0" y2="225.0" stroke="#0d9488" stroke-width="1.4" stroke-dasharray="8 6"/></g>
+<g id="f3-R"><circle cx="276.2" cy="225.0" r="5.5" fill="#C77A40" stroke="#fff" stroke-width="1.2"/>
+<text x="286.2" y="215.0" fill="#C77A40" text-anchor="start" class="fl" style="font-size:13px">R₀ = OO′ ∩ e</text></g>
+<g id="f3-aux"><line x1="0.0" y1="278.8" x2="557.5" y2="0.0" stroke="rgba(43,90,147,.35)" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="580.0" y1="360.0" x2="220.0" y2="0.0" stroke="rgba(13,148,136,.35)" stroke-width="1.2" stroke-dasharray="4 4"/></g></svg>
+      <div class="fig-ctrl">
+        <label><input type="checkbox" class="tgl" data-target="f3-R" checked> punto <span class="v">R</span><sub>0</sub> = <span class="v">OO</span>′ ∩ <span class="v">e</span></label>
+        <label><input type="checkbox" class="tgl" data-target="f3-img" checked> la homóloga, superpuesta</label>
+        <label><input type="checkbox" class="tgl" data-target="f3-aux" checked> un par de E1, para comparar</label>
+      </div>
+      <div class="fig-leg">
+        <span class="leg"><i style="background:#45785A"></i> recta <span class="v">OO</span>′</span>
+        <span class="leg"><i style="background:#0d9488"></i> su homóloga (punteada, encima)</span>
+        <span class="leg"><i style="background:#7c3aed"></i> eje <span class="v">e</span></span>
+        <span class="leg"><i style="background:#C77A40"></i> <span class="v">R</span><sub>0</sub></span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 1</span><span class="step-title"><span class="v">OO</span>′ pertenece a los dos haces</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p><span class="v">O</span> ≠ <span class="v">O</span>′ (son los vértices de dos haces distintos), así que <span class="v">u</span> = <span class="v">OO</span>′ es una recta bien definida. Pasa por <span class="v">O</span>, luego <span class="v">u</span> ∈ <span class="fn">haz</span><sub><span class="v">O</span></sub>: tiene imagen por <span class="v">ρ</span>. Y también pasa por <span class="v">O</span>′, luego <span class="v">u</span> ∈ <span class="fn">haz</span><sub><span class="v">O′</span></sub>.</p>
+        <div class="calc-final"><span class="v">u</span> = <span class="v">OO</span>′ ∈ <span class="fn">haz</span><sub><span class="v">O</span></sub> ∩ <span class="fn">haz</span><sub><span class="v">O′</span></sub></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 2</span><span class="step-title">Construcción: <span class="v">R</span><sub>0</sub> = <span class="v">u</span> ∩ <span class="v">e</span> y la recta <span class="v">O</span>′<span class="v">R</span><sub>0</sub></span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <div class="calc"><span class="v">R</span><sub>0</sub> = <span class="v">u</span> ∩ <span class="v">e</span> &nbsp;(único, porque <span class="v">u</span> ≠ <span class="v">e</span>: <span class="v">O</span> ∈ <span class="v">u</span> y <span class="v">O</span> ∉ <span class="v">e</span>)</div>
+        <div class="calc"><span class="v">ρ</span>(<span class="v">u</span>) = <span class="v">O</span>′<span class="v">R</span><sub>0</sub></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 3</span><span class="step-title">Justificación: <span class="v">O</span>′<span class="v">R</span><sub>0</sub> = <span class="v">u</span></span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>Los dos puntos que determinan la imagen están sobre <span class="v">u</span>:</p>
+        <ul>
+          <li><span class="v">O</span>′ ∈ <span class="v">u</span>, por definición de <span class="v">u</span>.</li>
+          <li><span class="v">R</span><sub>0</sub> ∈ <span class="v">u</span>, porque es un punto de corte de <span class="v">u</span> con <span class="v">e</span>.</li>
+        </ul>
+        <p>Además <span class="v">O</span>′ ≠ <span class="v">R</span><sub>0</sub>, porque <span class="v">R</span><sub>0</sub> ∈ <span class="v">e</span> y <span class="v">O</span>′ ∉ <span class="v">e</span>. Por dos puntos distintos pasa una única recta, y <span class="v">u</span> ya pasa por los dos:</p>
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">OO</span>′) = <span class="v">O</span>′<span class="v">R</span><sub>0</sub> = <span class="v">OO</span>′ &nbsp;∎</div>
+        <p><b>Caso límite.</b> Si <span class="v">OO</span>′ ∥ <span class="v">e</span>, entonces <span class="v">R</span><sub>0</sub> es el punto impropio del eje; el argumento no cambia, porque ese punto impropio también está sobre <span class="v">OO</span>′ (son paralelas). Se comprobó con un eje alternativo <span class="v">y</span> = 3: la imagen vuelve a ser <span class="v">OO</span>′.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 4</span><span class="step-title">Verificación en la figura y lectura del resultado</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <div class="calc"><span class="v">u</span> = <span class="v">OO</span>′ : <span class="v">y</span> = 0; &nbsp;<span class="v">R</span><sub>0</sub> = <span class="v">u</span> ∩ <span class="v">e</span>: 2<span class="v">x</span> − 0 − 6 = 0 ⟹ <span class="v">R</span><sub>0</sub> = (3 ; 0)</div>
+        <div class="calc"><span class="v">O</span>′<span class="v">R</span><sub>0</sub>: por (6 ; 0) y (3 ; 0) ⟹ <span class="v">y</span> = 0 = <span class="v">u</span> &nbsp;✓</div>
+        <p><b>Lectura.</b> <span class="v">OO</span>′ es una <b>recta unida</b>: coincide con su homóloga. Es el dual exacto de lo que pasaba en la perspectividad entre rectas, donde el punto común <span class="v">r</span><sub>1</sub> ∩ <span class="v">r</span><sub>2</sub> era unido. Ninguna otra recta del haz de <span class="v">O</span> pasa por <span class="v">O</span>′, así que ninguna otra puede ser unida.</p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <canvas id="cv-e3" width="900" height="500" role="img" aria-label="Laboratorio: llevar la recta r hasta OO′">Laboratorio: llevar la recta r hasta OO′.</canvas>
+      <div class="fig-ctrl">
+        <div class="slider-row">
+          <label for="sl-e3">🧪 Girar <span class="v">r</span></label>
+          <input type="range" id="sl-e3" data-lab="e3" min="0" max="179.5" step="0.5" value="12">
+        </div>
+        <button class="minibtn" data-lab="e3" data-ang="0">llevar <span class="v">r</span> hasta <span class="v">OO</span>′</button>
+        <button class="minibtn" data-reset="e3">↺ reiniciar</button>
+      </div>
+      <div class="readout" id="ro-e3"></div>
+    </div>
+
+    <div class="ans-box">
+      <div class="ans-header"><span class="ans-label">✓ Respuesta final y cantidad de soluciones</span><span class="chev">▾</span></div>
+      <div class="ans-content">
+        <div class="calc-final"><span class="v">ρ</span>(<span class="v">OO</span>′) = <span class="v">OO</span>′ &nbsp;— es la recta unida de la perspectividad</div>
+        <p><b>Cantidad de soluciones:</b> la imagen es única (dos puntos distintos <span class="v">O</span>′ y <span class="v">R</span><sub>0</sub>). Y <span class="v">OO</span>′ es la <b>única</b> recta unida: una recta unida tiene que pertenecer a los dos haces, y la única recta que pasa por <span class="v">O</span> y por <span class="v">O</span>′ es <span class="v">OO</span>′.</p>
+      </div>
+    </div>
+
+    <div class="errtip">
+      <div class="err-label">⚠ Error típico</div>
+      Decir que la recta unida es el eje <span class="v">e</span>. El eje no pertenece a ninguno de los dos haces —la definición lo prohíbe—, así que ni siquiera tiene imagen. Lo que el eje tiene de especial es otra cosa: cada recta y su homóloga se cortan sobre él.
+    </div>
+
+    <div class="mini-test">
+      <h4>🧠 Mini-test E3</h4>
+      <p class="mt-q">¿Por qué <span class="v">ρ</span>(<span class="v">OO</span>′) = <span class="v">OO</span>′?</p>
+      <ul class="opts" data-test="t3" data-correct="0">
+        <li><button class="opt" data-i="0">Porque <span class="v">O</span>′ y <span class="v">R</span><sub>0</sub> = <span class="v">OO</span>′ ∩ <span class="v">e</span> están los dos sobre <span class="v">OO</span>′ y son distintos.</button></li>
+        <li><button class="opt" data-i="1">Porque <span class="v">OO</span>′ es paralela al eje.</button></li>
+        <li><button class="opt" data-i="2">Porque toda recta del haz de <span class="v">O</span> es unida.</button></li>
+      </ul>
+      <div class="test-fb" data-fb="t3"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= E4 ================= -->
+<section class="tab-content" role="tabpanel" data-tab="e4">
+  <div class="ejercicio" data-ej="4">
+    <div class="ej-header">
+      <span class="ej-badge">Ejercicio 4</span>
+      <span class="ej-lab"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></span>
+    </div>
+    <div class="ej-enunciado">
+      <div class="enun-label">Enunciado</div>
+      Dada la perspectividad &nbsp;<span class="math"><span class="v">ρ</span> : <span class="fn">haz</span><sub><span class="v">O</span></sub> ⟶ <span class="fn">haz</span><sub><span class="v">O′</span></sub> (<span class="v">e</span>) / <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O</span></sub> ∧ <span class="v">e</span> ∉ <span class="fn">haz</span><sub><span class="v">O′</span></sub></span>, verificar que la perspectividad entre haces conserva las razones dobles de cuatro rectas.
+    </div>
+
+    <div class="clave">
+      <div class="clave-label">🔑 Clave del razonamiento</div>
+      Para calcular una razón doble de rectas hay que cortar el haz con una transversal que no pase por el vértice. El eje <span class="v">e</span> sirve para <b>los dos haces a la vez</b>, y cada recta y su homóloga lo cortan en el <b>mismo punto</b>. Las dos razones dobles terminan siendo la misma razón doble de cuatro puntos.
+    </div>
+
+    <div class="fig">
+      <svg viewBox="0 0 640 470" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Figura del ejercicio 4: cuatro rectas a, b, c, d del haz de O, sus homólogas, los puntos A, B, C, D sobre el eje y dos transversales"><rect width="640" height="470" fill="#FFFDF8"/><defs><pattern id="g-f4" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="rgba(43,90,147,.06)" stroke-width="1"/></pattern><marker id="ar-f4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7c3aed"/></marker></defs><rect width="640" height="470" fill="url(#g-f4)"/>
+<line x1="202.5" y1="470.0" x2="437.5" y2="0.0" stroke="#7c3aed" stroke-width="2.6"/>
+<line x1="0.0" y1="377.2" x2="640.0" y2="194.4" stroke="#2B5A93" stroke-width="1.8"/>
+<line x1="0.0" y1="395.0" x2="640.0" y2="75.0" stroke="#2B5A93" stroke-width="1.8"/>
+<line x1="0.0" y1="408.8" x2="613.2" y2="0.0" stroke="#2B5A93" stroke-width="1.8"/>
+<line x1="0.0" y1="428.9" x2="471.8" y2="0.0" stroke="#2B5A93" stroke-width="1.8"/>
+<circle cx="83.0" cy="353.5" r="6" fill="#2B5A93" stroke="#fff" stroke-width="1.2"/>
+<text x="75.0" y="373.5" fill="#2B5A93" text-anchor="end" class="fl" style="font-size:13px">O</text>
+<circle cx="438.5" cy="353.5" r="6" fill="#0d9488" stroke="#fff" stroke-width="1.2"/>
+<text x="450.5" y="357.5" fill="#0d9488" text-anchor="start" class="fl" style="font-size:13px">O′</text>
+<text x="632.0" y="210.4" fill="#2B5A93" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">a</text>
+<text x="632.0" y="91.0" fill="#2B5A93" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">b</text>
+<text x="605.2" y="16.0" fill="#2B5A93" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">c</text>
+<text x="463.8" y="16.0" fill="#2B5A93" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">d</text>
+<text x="231.1" y="454.3" fill="#7c3aed" text-anchor="start" class="fl" style="font-style:italic;font-size:15px">e</text>
+<g id="f4-img"><line x1="0.0" y1="178.1" x2="640.0" y2="434.1" stroke="#0d9488" stroke-width="1.8"/>
+<line x1="555.0" y1="470.0" x2="85.0" y2="0.0" stroke="#0d9488" stroke-width="1.8"/>
+<line x1="496.8" y1="470.0" x2="261.8" y2="0.0" stroke="#0d9488" stroke-width="1.8"/>
+<line x1="450.2" y1="470.0" x2="403.2" y2="0.0" stroke="#0d9488" stroke-width="1.8"/>
+<text x="10.0" y="194.1" fill="#0d9488" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">a′</text>
+<text x="95.0" y="16.0" fill="#0d9488" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">b′</text>
+<text x="271.8" y="16.0" fill="#0d9488" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">c′</text>
+<text x="413.2" y="16.0" fill="#0d9488" text-anchor="middle" class="fl" style="font-style:italic;font-size:14px">d′</text></g>
+<g id="f4-sec"><line x1="201.5" y1="470.0" x2="201.5" y2="0.0" stroke="#a34d6d" stroke-width="1.6" stroke-dasharray="6 4"/>
+<line x1="0.0" y1="412.8" x2="640.0" y2="412.8" stroke="#a34d6d" stroke-width="1.6" stroke-dasharray="6 4"/>
+<circle cx="201.5" cy="319.7" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="194.5" y="323.7" fill="#a34d6d" text-anchor="end" class="fl" style="font-size:13px">A₁</text>
+<circle cx="201.5" cy="294.3" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="194.5" y="298.3" fill="#a34d6d" text-anchor="end" class="fl" style="font-size:13px">B₁</text>
+<circle cx="201.5" cy="274.5" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="194.5" y="278.5" fill="#a34d6d" text-anchor="end" class="fl" style="font-size:13px">C₁</text>
+<circle cx="201.5" cy="245.8" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="194.5" y="249.8" fill="#a34d6d" text-anchor="end" class="fl" style="font-size:13px">D₁</text>
+<circle cx="586.7" cy="412.8" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="586.7" y="429.8" fill="#a34d6d" text-anchor="middle" class="fl" style="font-size:13px">A₂</text>
+<circle cx="497.8" cy="412.8" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="497.8" y="429.8" fill="#a34d6d" text-anchor="middle" class="fl" style="font-size:13px">B₂</text>
+<circle cx="468.1" cy="412.8" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="468.1" y="429.8" fill="#a34d6d" text-anchor="middle" class="fl" style="font-size:13px">C₂</text>
+<circle cx="444.4" cy="412.8" r="3.6" fill="#a34d6d" stroke="#fff" stroke-width="1.2"/>
+<text x="444.4" y="429.8" fill="#a34d6d" text-anchor="middle" class="fl" style="font-size:13px">D₂</text>
+<text x="207.4" y="442.4" fill="#a34d6d" text-anchor="start" class="fl" style="font-style:italic;font-size:14px">s</text>
+<text x="5.9" y="400.9" fill="#a34d6d" text-anchor="start" class="fl" style="font-style:italic;font-size:14px">s′</text></g>
+<g id="f4-pe"><circle cx="290.4" cy="294.3" r="4.8" fill="#C77A40" stroke="#fff" stroke-width="1.2"/>
+<text x="299.4" y="299.3" fill="#C77A40" text-anchor="start" class="fl" style="font-size:13px">A</text>
+<circle cx="320.0" cy="235.0" r="4.8" fill="#C77A40" stroke="#fff" stroke-width="1.2"/>
+<text x="329.0" y="240.0" fill="#C77A40" text-anchor="start" class="fl" style="font-size:13px">B</text>
+<circle cx="349.6" cy="175.7" r="4.8" fill="#C77A40" stroke="#fff" stroke-width="1.2"/>
+<text x="358.6" y="180.7" fill="#C77A40" text-anchor="start" class="fl" style="font-size:13px">C</text>
+<circle cx="408.9" cy="57.2" r="4.8" fill="#C77A40" stroke="#fff" stroke-width="1.2"/>
+<text x="417.9" y="62.2" fill="#C77A40" text-anchor="start" class="fl" style="font-size:13px">D</text></g></svg>
+      <div class="fig-ctrl">
+        <label><input type="checkbox" class="tgl" data-target="f4-pe" checked> puntos <span class="v">A</span>, <span class="v">B</span>, <span class="v">C</span>, <span class="v">D</span> sobre <span class="v">e</span></label>
+        <label><input type="checkbox" class="tgl" data-target="f4-img" checked> rectas homólogas</label>
+        <label><input type="checkbox" class="tgl" data-target="f4-sec"> otras transversales <span class="v">s</span> y <span class="v">s</span>′</label>
+      </div>
+      <div class="fig-leg">
+        <span class="leg"><i style="background:#2B5A93"></i> <span class="v">a</span>, <span class="v">b</span>, <span class="v">c</span>, <span class="v">d</span> en el haz de <span class="v">O</span></span>
+        <span class="leg"><i style="background:#0d9488"></i> <span class="v">a</span>′, <span class="v">b</span>′, <span class="v">c</span>′, <span class="v">d</span>′ en el haz de <span class="v">O</span>′</span>
+        <span class="leg"><i style="background:#7c3aed"></i> eje <span class="v">e</span></span>
+        <span class="leg"><i style="background:#a34d6d"></i> transversales de control</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 1</span><span class="step-title">Planteo: qué hay que probar</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p><b>Datos.</b> Cuatro rectas <span class="v">a</span>, <span class="v">b</span>, <span class="v">c</span>, <span class="v">d</span> ∈ <span class="fn">haz</span><sub><span class="v">O</span></sub> y sus homólogas <span class="v">a</span>′ = <span class="v">ρ</span>(<span class="v">a</span>), <span class="v">b</span>′ = <span class="v">ρ</span>(<span class="v">b</span>), <span class="v">c</span>′ = <span class="v">ρ</span>(<span class="v">c</span>), <span class="v">d</span>′ = <span class="v">ρ</span>(<span class="v">d</span>) ∈ <span class="fn">haz</span><sub><span class="v">O′</span></sub>.</p>
+        <div class="calc-final"><span class="w">Tesis:</span> &nbsp;(<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′) = (<span class="v">abcd</span>)</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 2</span><span class="step-title">El eje como transversal del haz de <span class="v">O</span></span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>Llamemos</p>
+        <div class="calc"><span class="v">A</span> = <span class="v">a</span> ∩ <span class="v">e</span>, &nbsp;<span class="v">B</span> = <span class="v">b</span> ∩ <span class="v">e</span>, &nbsp;<span class="v">C</span> = <span class="v">c</span> ∩ <span class="v">e</span>, &nbsp;<span class="v">D</span> = <span class="v">d</span> ∩ <span class="v">e</span></div>
+        <p>Como <span class="v">O</span> ∉ <span class="v">e</span>, el eje es una transversal válida del haz de <span class="v">O</span>. Por la definición de razón doble de cuatro rectas:</p>
+        <div class="calc-final">(<span class="v">abcd</span>) = (<span class="v">ABCD</span>)</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 3</span><span class="step-title">El eje como transversal del haz de <span class="v">O</span>′</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>Por la definición de <span class="v">ρ</span>, la homóloga de <span class="v">a</span> es <span class="v">a</span>′ = <span class="v">O</span>′<span class="v">A</span>: pasa por <span class="v">A</span>. Entonces <span class="v">A</span> ∈ <span class="v">a</span>′ y <span class="v">A</span> ∈ <span class="v">e</span>. Como <span class="v">a</span>′ ≠ <span class="v">e</span> (porque <span class="v">O</span>′ ∈ <span class="v">a</span>′ y <span class="v">O</span>′ ∉ <span class="v">e</span>), su único punto común es <span class="v">A</span>:</p>
+        <div class="calc"><span class="v">a</span>′ ∩ <span class="v">e</span> = <span class="v">A</span>, &nbsp;<span class="v">b</span>′ ∩ <span class="v">e</span> = <span class="v">B</span>, &nbsp;<span class="v">c</span>′ ∩ <span class="v">e</span> = <span class="v">C</span>, &nbsp;<span class="v">d</span>′ ∩ <span class="v">e</span> = <span class="v">D</span></div>
+        <p>Y como <span class="v">O</span>′ ∉ <span class="v">e</span>, el eje también es una transversal válida del haz de <span class="v">O</span>′:</p>
+        <div class="calc-final">(<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′) = (<span class="v">ABCD</span>)</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 4</span><span class="step-title">Conclusión</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>Los pasos 2 y 3 igualan las dos razones dobles al mismo número:</p>
+        <div class="calc-final">(<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′) = (<span class="v">ABCD</span>) = (<span class="v">abcd</span>) &nbsp;∎</div>
+        <p>La prueba descansa en un solo hecho previo: que la razón doble de cuatro rectas <b>no depende de la transversal</b>. Eso permite elegir el eje, la transversal que tienen en común los dos haces.</p>
+        <p><b>Si alguna de las cuatro rectas es paralela al eje,</b> su punto sobre <span class="v">e</span> es impropio (ejercicio 2) y (<span class="v">ABCD</span>) se calcula con la convención usual para un punto impropio; el razonamiento no cambia. Si alguna es <span class="v">OO</span>′, su punto sobre el eje es <span class="v">R</span><sub>0</sub> y su homóloga es ella misma (ejercicio 3); tampoco cambia nada.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-badge">PASO 5</span><span class="step-title">Verificación numérica con otras transversales</span><span class="chev">▾</span></div>
+      <div class="step-body">
+        <p>Datos de la figura: <span class="v">O</span> = (0 ; 0), <span class="v">O</span>′ = (6 ; 0), <span class="v">e</span> : 2<span class="v">x</span> − <span class="v">y</span> − 6 = 0, y cuatro rectas del haz de <span class="v">O</span> que cortan al eje en</p>
+        <div class="calc"><span class="v">A</span> = (<span class="frac"><span class="num">7</span><span class="den">2</span></span> ; 1), &nbsp;<span class="v">B</span> = (4 ; 2), &nbsp;<span class="v">C</span> = (<span class="frac"><span class="num">9</span><span class="den">2</span></span> ; 3), &nbsp;<span class="v">D</span> = (<span class="frac"><span class="num">11</span><span class="den">2</span></span> ; 5)</div>
+        <p><b>Sobre el eje</b> alcanza con las abscisas (<span class="v">e</span> no es vertical, y la proyección sobre el eje <span class="v">x</span> conserva las razones entre segmentos de una misma recta):</p>
+        <div class="calc">(<span class="v">ABCD</span>) = <span class="frac"><span class="num">(<span class="frac"><span class="num">7</span><span class="den">2</span></span> − <span class="frac"><span class="num">9</span><span class="den">2</span></span>) · (4 − <span class="frac"><span class="num">11</span><span class="den">2</span></span>)</span><span class="den">(4 − <span class="frac"><span class="num">9</span><span class="den">2</span></span>) · (<span class="frac"><span class="num">7</span><span class="den">2</span></span> − <span class="frac"><span class="num">11</span><span class="den">2</span></span>)</span></span> = <span class="frac"><span class="num">(−1) · (−<span class="frac"><span class="num">3</span><span class="den">2</span></span>)</span><span class="den">(−<span class="frac"><span class="num">1</span><span class="den">2</span></span>) · (−2)</span></span> = <span class="frac"><span class="num"><span class="frac"><span class="num">3</span><span class="den">2</span></span></span><span class="den">1</span></span> = <span class="frac"><span class="num">3</span><span class="den">2</span></span></div>
+        <p><b>Haz de <span class="v">O</span> cortado con <span class="v">s</span> : <span class="v">x</span> = 2</b> (no pasa por <span class="v">O</span>). Los cortes son <span class="v">A</span><sub>1</sub> = (2 ; <span class="frac"><span class="num">4</span><span class="den">7</span></span>), <span class="v">B</span><sub>1</sub> = (2 ; 1), <span class="v">C</span><sub>1</sub> = (2 ; <span class="frac"><span class="num">4</span><span class="den">3</span></span>), <span class="v">D</span><sub>1</sub> = (2 ; <span class="frac"><span class="num">20</span><span class="den">11</span></span>). Con las ordenadas:</p>
+        <div class="calc">(<span class="v">abcd</span>) = <span class="frac"><span class="num">(<span class="frac"><span class="num">4</span><span class="den">7</span></span> − <span class="frac"><span class="num">4</span><span class="den">3</span></span>) · (1 − <span class="frac"><span class="num">20</span><span class="den">11</span></span>)</span><span class="den">(1 − <span class="frac"><span class="num">4</span><span class="den">3</span></span>) · (<span class="frac"><span class="num">4</span><span class="den">7</span></span> − <span class="frac"><span class="num">20</span><span class="den">11</span></span>)</span></span> = <span class="frac"><span class="num">(−<span class="frac"><span class="num">16</span><span class="den">21</span></span>) · (−<span class="frac"><span class="num">9</span><span class="den">11</span></span>)</span><span class="den">(−<span class="frac"><span class="num">1</span><span class="den">3</span></span>) · (−<span class="frac"><span class="num">96</span><span class="den">77</span></span>)</span></span> = <span class="frac"><span class="num"><span class="frac"><span class="num">48</span><span class="den">77</span></span></span><span class="den"><span class="frac"><span class="num">32</span><span class="den">77</span></span></span></span> = <span class="frac"><span class="num">3</span><span class="den">2</span></span></div>
+        <p><b>Haz de <span class="v">O</span>′ cortado con <span class="v">s</span>′ : <span class="v">y</span> = −1</b> (no pasa por <span class="v">O</span>′). Los cortes son <span class="v">A</span><sub>2</sub> = (<span class="frac"><span class="num">17</span><span class="den">2</span></span> ; −1), <span class="v">B</span><sub>2</sub> = (7 ; −1), <span class="v">C</span><sub>2</sub> = (<span class="frac"><span class="num">13</span><span class="den">2</span></span> ; −1), <span class="v">D</span><sub>2</sub> = (<span class="frac"><span class="num">61</span><span class="den">10</span></span> ; −1). Con las abscisas:</p>
+        <div class="calc">(<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′) = <span class="frac"><span class="num">(<span class="frac"><span class="num">17</span><span class="den">2</span></span> − <span class="frac"><span class="num">13</span><span class="den">2</span></span>) · (7 − <span class="frac"><span class="num">61</span><span class="den">10</span></span>)</span><span class="den">(7 − <span class="frac"><span class="num">13</span><span class="den">2</span></span>) · (<span class="frac"><span class="num">17</span><span class="den">2</span></span> − <span class="frac"><span class="num">61</span><span class="den">10</span></span>)</span></span> = <span class="frac"><span class="num">2 · <span class="frac"><span class="num">9</span><span class="den">10</span></span></span><span class="den"><span class="frac"><span class="num">1</span><span class="den">2</span></span> · <span class="frac"><span class="num">12</span><span class="den">5</span></span></span></span> = <span class="frac"><span class="num"><span class="frac"><span class="num">9</span><span class="den">5</span></span></span><span class="den"><span class="frac"><span class="num">6</span><span class="den">5</span></span></span></span> = <span class="frac"><span class="num">3</span><span class="den">2</span></span></div>
+        <div class="calc-final">(<span class="v">abcd</span>) = (<span class="v">ABCD</span>) = (<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′) = <span class="frac"><span class="num">3</span><span class="den">2</span></span> &nbsp;✓</div>
+        <p>Las tres cuentas se hicieron con fracciones exactas, y se confirmaron además con la fórmula de los senos en <span class="v">O</span> y en <span class="v">O</span>′.</p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <canvas id="cv-e4" width="900" height="560" role="img" aria-label="Laboratorio: cambiar el eje de la perspectividad y comparar las razones dobles">Laboratorio: cambiar el eje de la perspectividad y comparar las razones dobles.</canvas>
+      <div class="fig-ctrl">
+        <div class="slider-row">
+          <label for="sl-e4">🧪 Girar el eje <span class="v">e</span></label>
+          <input type="range" id="sl-e4" min="0" max="179.5" step="0.5" value="63.5">
+        </div>
+        <button class="minibtn" data-reset="e4">↺ reiniciar</button>
+      </div>
+      <div class="readout" id="ro-e4"></div>
+    </div>
+    <p style="font-size:13.5px;color:var(--ink-faint)">El eje gira alrededor de <span class="v">B</span>. Cada posición es una perspectividad distinta y las cuatro homólogas cambian; las razones dobles se calculan con la fórmula de los senos en cada vértice.</p>
+
+    <div class="ans-box">
+      <div class="ans-header"><span class="ans-label">✓ Respuesta final y alcance</span><span class="chev">▾</span></div>
+      <div class="ans-content">
+        <div class="calc-final">(<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′) = (<span class="v">abcd</span>)</div>
+        <p>donde <span class="v">a</span>′ = <span class="v">ρ</span>(<span class="v">a</span>), <span class="v">b</span>′ = <span class="v">ρ</span>(<span class="v">b</span>), <span class="v">c</span>′ = <span class="v">ρ</span>(<span class="v">c</span>), <span class="v">d</span>′ = <span class="v">ρ</span>(<span class="v">d</span>): la razón doble de las cuatro rectas homólogas es igual a la de las cuatro rectas originales.</p>
+        <p><b>Alcance:</b> la igualdad vale para <b>cualquier</b> cuaterna de rectas del haz de <span class="v">O</span>, en cualquier orden (el mismo orden de un lado y del otro), y para cualquier eje que no pase por los vértices. Es el dual del teorema que ya conocías: la perspectividad entre rectas conserva la razón doble de cuatro puntos.</p>
+      </div>
+    </div>
+
+    <div class="errtip">
+      <div class="err-label">⚠ Error típico</div>
+      «Verificar» con un solo dibujo y una sola cuenta, y dar el teorema por probado. Un ejemplo numérico no demuestra nada general: la demostración es la de los pasos 2 a 4, y la cuenta del paso 5 sólo la controla. El otro error frecuente es cambiar el orden de un lado: (<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′) se compara con (<span class="v">abcd</span>), no con (<span class="v">abdc</span>).
+    </div>
+
+    <div class="mini-test">
+      <h4>🧠 Mini-test E4</h4>
+      <p class="mt-q">¿Por qué se puede usar el eje como transversal de los dos haces a la vez?</p>
+      <ul class="opts" data-test="t4" data-correct="1">
+        <li><button class="opt" data-i="0">Porque el eje pasa por <span class="v">O</span> y por <span class="v">O</span>′.</button></li>
+        <li><button class="opt" data-i="1">Porque no pasa por ninguno de los dos vértices, y cada recta y su homóloga lo cortan en el mismo punto.</button></li>
+        <li><button class="opt" data-i="2">Porque el eje es paralelo a <span class="v">OO</span>′.</button></li>
+      </ul>
+      <div class="test-fb" data-fb="t4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESUMEN ================= -->
+<section class="tab-content" role="tabpanel" data-tab="resumen">
+  <div class="tema-intro">
+    <h2 class="tema-title">Resumen · <em>una regla, cuatro respuestas</em></h2>
+    <p class="tema-desc">Todo sale de <span class="v">ρ</span>(<span class="v">r</span>) = <span class="v">O</span>′(<span class="v">r</span> ∩ <span class="v">e</span>).</p>
+  </div>
+
+  <div class="sum-grid">
+    <div class="sum-card"><div class="ic">✂️</div><h4>E1 · <span class="v">ρ</span>(<span class="v">r</span>)</h4><p><span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span> y <span class="v">ρ</span>(<span class="v">r</span>) = <span class="v">O</span>′<span class="v">R</span>. Única, porque <span class="v">r</span> ≠ <span class="v">e</span> y <span class="v">O</span>′ ≠ <span class="v">R</span>.</p></div>
+    <div class="sum-card"><div class="ic">∥</div><h4>E2 · <span class="v">v</span> ∥ <span class="v">e</span></h4><p><span class="v">v</span> ∩ <span class="v">e</span> = <span class="v">E</span><sub>∞</sub>; <span class="v">ρ</span>(<span class="v">v</span>) es la paralela al eje por <span class="v">O</span>′. <span class="v">v</span>, <span class="v">e</span> y <span class="v">ρ</span>(<span class="v">v</span>) son paralelas.</p></div>
+    <div class="sum-card"><div class="ic">🔁</div><h4>E3 · <span class="v">ρ</span>(<span class="v">OO</span>′)</h4><p><span class="v">O</span>′ y <span class="v">R</span><sub>0</sub> están sobre <span class="v">OO</span>′, así que <span class="v">ρ</span>(<span class="v">OO</span>′) = <span class="v">OO</span>′: la única recta unida.</p></div>
+    <div class="sum-card"><div class="ic">🔢</div><h4>E4 · razón doble</h4><p>El eje corta a cada par homólogo en el mismo punto: (<span class="v">abcd</span>) = (<span class="v">ABCD</span>) = (<span class="v">a</span>′<span class="v">b</span>′<span class="v">c</span>′<span class="v">d</span>′).</p></div>
+  </div>
+
+  <table class="cmp">
+    <tr><th>Perspectividad entre rectas</th><th>Perspectividad entre haces</th></tr>
+    <tr><td><span class="v">X</span>′ = <span class="v">OX</span> ∩ <span class="v">r</span><sub>2</sub> (unir y cortar)</td><td><span class="v">r</span>′ = <span class="v">O</span>′<span class="v">R</span>, <span class="v">R</span> = <span class="v">r</span> ∩ <span class="v">e</span> (cortar y unir)</td></tr>
+    <tr><td>punto unido: <span class="v">r</span><sub>1</sub> ∩ <span class="v">r</span><sub>2</sub></td><td>recta unida: <span class="v">OO</span>′</td></tr>
+    <tr><td>conserva la razón doble de cuatro puntos</td><td>conserva la razón doble de cuatro rectas</td></tr>
+  </table>
+
+  <h3 class="section-h">🧭 Estrategia general</h3>
+  <p>Ante una perspectividad entre haces: identificar los dos vértices y el eje, y verificar que el eje no pase por ninguno. Para la imagen de cualquier recta, cortar con el eje y unir con el otro vértice; si el corte es impropio, unir significa trazar la paralela. Para cualquier propiedad que involucre a las dos familias de rectas, buscar algo que los dos haces compartan: el eje (que cada par homólogo corta en un mismo punto) y la recta <span class="v">OO</span>′ (que pertenece a los dos).</p>
+
+  <div class="clave">
+    <div class="clave-label">🎓 Para llevarse</div>
+    La perspectividad entre haces es la lectura dual de la perspectividad entre rectas: lo que allí era un punto unido acá es una recta unida, y la razón doble de cuatro puntos pasa a ser la razón doble de cuatro rectas. Ninguno de estos resultados es nuevo: son los mismos, leídos del otro lado.
+  </div>
+
+  <p style="margin-top:18px"><button class="btn-print" data-action="print">🖨 Imprimir / guardar PDF</button></p>
+</section>
+
+<div class="barra-final">
+  <button class="btn-ghost" id="reiniciar-todo">↺ Empezar de nuevo</button>
+  <p class="barra-nota">Cierra todos los pasos y respuestas, borra lo respondido en los mini-tests y devuelve cada figura y cada laboratorio a su estado inicial.</p>
+</div>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-quote">"La matemática no exige genios, exige constancia."</div>
+    <div class="footer-coaut">Prof. Ariel Cardozo &nbsp;·&nbsp; Prof. Analía Chaparro</div>
+    <div class="footer-lab">
+      <div class="lab-name"><span class="bullet"></span><span class="lab">laboratorio</span><span class="best">best</span><span class="ia">-IA</span></div>
+      <div class="lab-sub">Prof. Ariel L. Cardozo Delgado</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ===== núcleo proyectivo (coordenadas homogéneas) ===== */
+  function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function H(p) { return [p[0], p[1], 1]; }
+  function deh(p) { var n = Math.hypot(p[0], p[1], p[2]); if (Math.abs(p[2]) < 1e-9 * n) return null; return [p[0] / p[2], p[1] / p[2]]; }
+  function lineDir(P, th) { return cross(H(P), [Math.cos(th), Math.sin(th), 0]); }
+  function angLine(l) { return Math.atan2(-l[0], l[1]); }
+  function sameLine(l, m) { var c = cross(l, m); return Math.hypot(c[0], c[1], c[2]) < 1e-9 * Math.hypot(l[0], l[1], l[2]) * Math.hypot(m[0], m[1], m[2]); }
+  function distPL(P, l) { return Math.abs(l[0] * P[0] + l[1] * P[1] + l[2]) / Math.hypot(l[0], l[1]); }
+  function crSin(L) {
+    var a = angLine(L[0]), b = angLine(L[1]), c = angLine(L[2]), d = angLine(L[3]);
+    return (Math.sin(c - a) * Math.sin(d - b)) / (Math.sin(c - b) * Math.sin(d - a));
+  }
+  function fmt(x, k) {
+    if (x === null || !isFinite(x)) return '∞';
+    var s = x.toFixed(k === undefined ? 3 : k);
+    if (/^-0\.0*$/.test(s)) s = s.slice(1);
+    return s.replace('-', '−');
+  }
+  function V(t) { return '<span class="v">' + t + '</span>'; }
+
+  /* ===== dibujo ===== */
+  var COL = { O: '#2B5A93', Op: '#0d9488', e: '#7c3aed', R: '#C77A40', un: '#45785A', bad: '#BC5235', aux: '#9c9384', ink: '#20201C', faint: '#6E6A5F' };
+  function Escena(cv, box) {
+    this.cv = cv; this.ctx = cv.getContext('2d'); this.W = cv.width; this.H = cv.height;
+    var x0 = box[0], x1 = box[1], y0 = box[2], y1 = box[3];
+    this.k = Math.min(this.W / (x1 - x0), this.H / (y1 - y0));
+    this.ox = (this.W - (x1 - x0) * this.k) / 2 - x0 * this.k;
+    this.oy = (this.H - (y1 - y0) * this.k) / 2 + y1 * this.k;
+    var r = cv.getBoundingClientRect();
+    this.K = r.width ? Math.max(1, Math.min(2.6, this.W / r.width)) : 1;
+  }
+  Escena.prototype.S = function (p) { return [p[0] * this.k + this.ox, this.oy - p[1] * this.k]; };
+  Escena.prototype.fondo = function () {
+    var c = this.ctx, i;
+    c.clearRect(0, 0, this.W, this.H);
+    c.fillStyle = '#FFFDF8'; c.fillRect(0, 0, this.W, this.H);
+    c.strokeStyle = 'rgba(43,90,147,.06)'; c.lineWidth = 1;
+    for (i = 0; i < this.W; i += 28) { c.beginPath(); c.moveTo(i + .5, 0); c.lineTo(i + .5, this.H); c.stroke(); }
+    for (i = 0; i < this.H; i += 28) { c.beginPath(); c.moveTo(0, i + .5); c.lineTo(this.W, i + .5); c.stroke(); }
+  };
+  /* recta del mundo → segmento de pantalla (recorte contra el rectángulo) */
+  Escena.prototype.clip = function (l) {
+    // en pantalla: x = X k + ox, y = oy − Y k  ⟹  X = (x − ox)/k, Y = (oy − y)/k
+    var a = l[0] / this.k, b = -l[1] / this.k, c = l[2] - l[0] * this.ox / this.k + l[1] * this.oy / this.k;
+    var W = this.W, Hh = this.H, pts = [];
+    function add(x, y) {
+      if (!isFinite(x) || !isFinite(y) || x < -1 || x > W + 1 || y < -1 || y > Hh + 1) return;
+      for (var i = 0; i < pts.length; i++) if (Math.hypot(pts[i][0] - x, pts[i][1] - y) < 1e-6) return;
+      pts.push([x, y]);
+    }
+    if (Math.abs(b) > 1e-12) { add(0, -c / b); add(W, -(a * W + c) / b); }
+    if (Math.abs(a) > 1e-12) { add(-c / a, 0); add(-(b * Hh + c) / a, Hh); }
+    return pts.length >= 2 ? [pts[0], pts[1]] : null;
+  };
+  Escena.prototype.recta = function (l, col, w, dash) {
+    var s = this.clip(l); if (!s) return null;
+    var c = this.ctx; c.save(); c.beginPath();
+    c.setLineDash((dash || []).map(function (v) { return v * this.K; }, this));
+    c.moveTo(s[0][0], s[0][1]); c.lineTo(s[1][0], s[1][1]);
+    c.strokeStyle = col; c.lineWidth = (w || 2) * Math.max(1, this.K * .8); c.stroke(); c.restore();
+    return s;
+  };
+  Escena.prototype.texto = function (x, y, t, col, size, align) {
+    var c = this.ctx;
+    c.font = '600 ' + ((size || 13) * this.K).toFixed(1) + 'px "Hanken Grotesk","STIX Two Text",system-ui,sans-serif';
+    c.textAlign = align || 'left';
+    c.save(); c.lineWidth = 4 * this.K; c.lineJoin = 'round'; c.strokeStyle = '#FFFDF8'; c.strokeText(t, x, y); c.restore();
+    c.fillStyle = col; c.fillText(t, x, y);
+    c.textAlign = 'left';
+  };
+  Escena.prototype.punto = function (p, col, r, t, dx, dy, align) {
+    if (!p) return;
+    var q = this.S(p), c = this.ctx, R = (r || 5) * Math.max(1, this.K * .85);
+    c.beginPath(); c.arc(q[0], q[1], R, 0, 6.2832); c.fillStyle = col; c.fill();
+    c.strokeStyle = '#fff'; c.lineWidth = 1.3 * this.K; c.stroke();
+    if (t) this.texto(q[0] + (dx === undefined ? 9 : dx) * this.K, q[1] + (dy === undefined ? -9 : dy) * this.K, t, col, 13, align);
+  };
+  Escena.prototype.dentro = function (p) { var q = this.S(p); return q[0] > 6 && q[0] < this.W - 6 && q[1] > 6 && q[1] < this.H - 6; };
+  /* rótulo de recta en el extremo superior de su segmento visible */
+  Escena.prototype.rotRecta = function (seg, t, col, dx, dy, abajo) {
+    if (!seg) return;
+    var p = (seg[0][1] < seg[1][1]) !== !!abajo ? seg[0] : seg[1];
+    this.texto(p[0] + (dx || 0) * this.K, p[1] + (dy || 18) * this.K, t, col, 14, 'center');
+  };
+
+  /* ===== datos comunes (mismos que las figuras verificadas) ===== */
+  var O = [0, 0], Op = [6, 0];
+  var E0 = [2, -1, -6];               /* 2x − y − 6 = 0 */
+  var OOp = cross(H(O), H(Op));
+
+  /* ===== laboratorio de E1, E2 y E3: girar r ===== */
+  var LAB = { e1: { ang: 26.5650512 }, e2: { ang: 55 }, e3: { ang: 12 } };
+  function drawHaz(tag) {
+    var cv = document.getElementById('cv-' + tag); if (!cv) return;
+    var S = new Escena(cv, [-1.5, 9.2, -2.7, 4.9]);
+    var th = LAB[tag].ang * Math.PI / 180;
+    var r = lineDir(O, th);
+    var Rh = cross(r, E0), R = deh(Rh);
+    var rp = cross(H(Op), Rh);
+    var paralela = R === null;
+    var unida = sameLine(r, rp);
+    S.fondo();
+    S.recta(OOp, COL.aux, 1.2, [6, 5]);
+    var se = S.recta(E0, COL.e, 2.6);
+    var sr = S.recta(r, COL.O, 2.4);
+    var srp = S.recta(rp, unida ? COL.un : COL.Op, unida ? 3 : 2.4, unida ? [10, 6] : null);
+    S.rotRecta(se, 'e', COL.e, 14, -10, true);
+    S.rotRecta(sr, 'r', COL.O, -12, 18);
+    S.rotRecta(srp, 'r′', unida ? COL.un : COL.Op, 14, 34);
+    if (R && S.dentro(R)) S.punto(R, COL.R, 6, 'R', 10, 18);
+    S.punto(O, COL.O, 6.5, 'O', -10, 20, 'right');
+    S.punto(Op, COL.Op, 6.5, 'O′', 10, 20);
+    if (paralela) S.texto(14 * S.K, 26 * S.K, 'R = r ∩ e es el punto impropio del eje', COL.R, 14);
+    else if (R && !S.dentro(R)) S.texto(14 * S.K, 26 * S.K, 'R está fuera del cuadro: ' + '(' + fmt(R[0], 2) + ' ; ' + fmt(R[1], 2) + ')', COL.R, 14);
+
+    var pill;
+    if (unida) pill = '<span class="state-pill state-ok">✓ ' + V('r') + ' = ' + V('OO') + '′: la homóloga coincide con ' + V('r') + ' (recta unida)</span>';
+    else if (paralela) pill = '<span class="state-pill state-ok">✓ ' + V('r') + ' ∥ ' + V('e') + ': ' + V('r') + '′ es la paralela al eje por ' + V('O') + '′</span>';
+    else pill = '<span class="state-pill state-info">' + V('r') + '′ = ' + V('O') + '′' + V('R') + ', con ' + V('R') + ' = ' + V('r') + ' ∩ ' + V('e') + '</span>';
+    var ro = document.getElementById('ro-' + tag);
+    if (ro) ro.innerHTML =
+      '<div class="kv"><span>ángulo de ' + V('r') + ' con ' + V('OO') + '′</span><b>' + fmt(LAB[tag].ang, 1) + '°</b></div>' +
+      '<div class="kv"><span>' + V('R') + ' = ' + V('r') + ' ∩ ' + V('e') + '</span><b>' + (R ? '(' + fmt(R[0], 2) + ' ; ' + fmt(R[1], 2) + ')' : 'impropio, dirección (1 ; 2)') + '</b></div>' +
+      '<div class="kv"><span>¿' + V('r') + '′ pasa por ' + V('O') + '′?</span><b>' + (distPL(Op, rp) < 1e-9 ? 'sí' : 'no') + '</b></div>' +
+      pill;
+  }
+
+  /* ===== laboratorio de E4: girar el eje alrededor de B ===== */
+  var PE = { A: [3.5, 1], B: [4, 2], C: [4.5, 3], D: [5.5, 5] };
+  var HZ = ['A', 'B', 'C', 'D'].map(function (k) { return cross(H(O), H(PE[k])); });
+  var L4 = { phi: 63.5 };
+  var INICIAL = { e1: 26.5650512, e2: 55, e3: 12, e4: 63.5 };
+  function drawCR() {
+    var cv = document.getElementById('cv-e4'); if (!cv) return;
+    var S = new Escena(cv, [-1.4, 9.4, -2.1, 6.0]);
+    var phi = L4.phi * Math.PI / 180;
+    var e = lineDir(PE.B, phi);
+    var valido = distPL(O, e) > 0.06 && distPL(Op, e) > 0.06;
+    S.fondo();
+    var se = S.recta(e, valido ? COL.e : COL.bad, 2.6);
+    S.rotRecta(se, 'e', valido ? COL.e : COL.bad, 14, -10, true);
+    var nombres = ['a', 'b', 'c', 'd'], P = [], imgs = [];
+    HZ.forEach(function (l, i) {
+      var s1 = S.recta(l, COL.O, 1.8);
+      S.rotRecta(s1, nombres[i], COL.O, -9, 18);
+    });
+    if (valido) {
+      HZ.forEach(function (l, i) {
+        var Rh = cross(l, e), lp = cross(H(Op), Rh);
+        imgs.push(lp); P.push(deh(Rh));
+        var s2 = S.recta(lp, COL.Op, 1.8);
+        S.rotRecta(s2, nombres[i] + '′', COL.Op, 11, 18);
+      });
+      P.forEach(function (p, i) { if (p && S.dentro(p)) S.punto(p, COL.R, 4.8, nombres[i].toUpperCase(), 9, 5); });
+    }
+    S.punto(O, COL.O, 6.5, 'O', -10, 20, 'right');
+    S.punto(Op, COL.Op, 6.5, 'O′', 11, 5);
+
+    var crO = crSin(HZ), crOp = valido ? crSin(imgs) : null, crE = null, impropio = false;
+    if (valido) {
+      var dir = [Math.cos(phi), Math.sin(phi)];
+      var t = P.map(function (p) { if (!p) { impropio = true; return null; } return (p[0] - PE.B[0]) * dir[0] + (p[1] - PE.B[1]) * dir[1]; });
+      if (!impropio) crE = ((t[0] - t[2]) * (t[1] - t[3])) / ((t[1] - t[2]) * (t[0] - t[3]));
+    }
+    var ok = valido && Math.abs(crOp - crO) < 1e-9;
+    var ro = document.getElementById('ro-e4');
+    if (ro) ro.innerHTML =
+      '<div class="kv"><span>ángulo del eje</span><b>' + fmt(L4.phi, 1) + '°</b></div>' +
+      '<div class="kv"><span>(' + V('abcd') + ') en el haz de ' + V('O') + '</span><b>' + fmt(crO) + '</b></div>' +
+      '<div class="kv"><span>(' + V('ABCD') + ') sobre el eje</span><b>' + (valido ? (impropio ? 'un punto es impropio' : fmt(crE)) : '—') + '</b></div>' +
+      '<div class="kv"><span>(' + V('a') + '′' + V('b') + '′' + V('c') + '′' + V('d') + '′) en el haz de ' + V('O') + '′</span><b>' + (valido ? fmt(crOp) : '—') + '</b></div>' +
+      (valido
+        ? '<span class="state-pill ' + (ok ? 'state-ok' : 'state-no') + '">' + (ok ? '✓ las razones dobles coinciden' : 'no coinciden') + '</span>'
+        : '<span class="state-pill state-no">el eje pasa por un vértice: no define una perspectividad</span>');
+  }
+
+  /* ===== controles ===== */
+  document.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (t.id === 'sl-e4') { L4.phi = parseFloat(t.value); drawCR(); return; }
+    var tag = t.dataset && t.dataset.lab;
+    if (tag && LAB[tag] && t.type === 'range') { LAB[tag].ang = parseFloat(t.value); drawHaz(tag); }
+  });
+
+  /* ===== mini-tests ===== */
+  var FB = {
+    t1: {
+      0: '✗ La paralela a r por O′ no usa el eje, y el eje es justamente lo que define la perspectividad.',
+      1: '✓ Correcto. Se corta r con el eje y el punto R se une con O′: r′ = O′R.',
+      2: '✗ r ∩ OO′ es el propio O (las dos rectas pasan por O): no aporta ningún punto nuevo.'
+    },
+    t2: {
+      0: '✗ En el plano proyectivo dos paralelas se cortan en su punto impropio. La regla se aplica igual.',
+      1: '✗ O′O es la homóloga de OO′ (ejercicio 3), no la de v.',
+      2: '✓ Correcto. v ∩ e es el punto impropio del eje, y unirlo con O′ es trazar por O′ la paralela al eje.'
+    },
+    t3: {
+      0: '✓ Correcto. Dos puntos distintos de OO′ determinan OO′.',
+      1: '✗ En general OO′ corta al eje en un punto propio R₀; el resultado no depende de ningún paralelismo.',
+      2: '✗ Sólo OO′ es unida: es la única recta del haz de O que pasa por O′.'
+    },
+    t4: {
+      0: '✗ Es al revés: la definición exige que el eje no pase por los vértices.',
+      1: '✓ Correcto. O ∉ e y O′ ∉ e lo hacen transversal válida de los dos haces, y a ∩ e = a′ ∩ e = A.',
+      2: '✗ No hace falta ningún paralelismo con OO′.'
+    }
+  };
+
+  /* ===== reiniciar ===== */
+  function reiniciarLab(tag) {
+    var sl = document.getElementById('sl-' + tag);
+    if (tag === 'e4') { L4.phi = INICIAL.e4; if (sl) sl.value = L4.phi; drawCR(); return; }
+    if (!LAB[tag]) return;
+    LAB[tag].ang = INICIAL[tag]; if (sl) sl.value = LAB[tag].ang; drawHaz(tag);
+  }
+  function reiniciarTodo() {
+    document.querySelectorAll('.step.open, .ans-box.open').forEach(function (b) {
+      b.classList.remove('open');
+      var h = b.querySelector('.step-header, .ans-header'); if (h) h.setAttribute('aria-expanded', 'false');
+    });
+    document.querySelectorAll('.opt').forEach(function (b) { b.disabled = false; b.classList.remove('ok', 'bad'); });
+    document.querySelectorAll('.test-fb').forEach(function (f) { f.className = 'test-fb'; f.textContent = ''; });
+    document.querySelectorAll('.tgl').forEach(function (c) {
+      c.checked = c.defaultChecked;
+      var g = document.getElementById(c.dataset.target); if (g) g.style.opacity = c.checked ? '1' : '0';
+    });
+    ['e1', 'e2', 'e3', 'e4'].forEach(reiniciarLab);
+    switchTab('inicio');
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(function (b) {
+      var a = b.dataset.tab === name; b.classList.toggle('active', a); b.setAttribute('aria-selected', a ? 'true' : 'false');
+    });
+    document.querySelectorAll('.tab-content').forEach(function (s) { s.classList.toggle('active', s.dataset.tab === name); });
+    var m = document.getElementById('main-content'); if (m) m.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    if (LAB[name]) drawHaz(name);
+    if (name === 'e4') drawCR();
+  }
+  window.switchTab = switchTab;
+
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    var tb = t.closest('.tab-btn'); if (tb) { switchTab(tb.dataset.tab); return; }
+    var go = t.closest('[data-goto]'); if (go) { switchTab(go.dataset.goto); return; }
+    var rs = t.closest('button[data-reset]');
+    if (rs) { reiniciarLab(rs.dataset.reset); return; }
+    if (t.closest('#reiniciar-todo')) { reiniciarTodo(); return; }
+    var ab = t.closest('button[data-ang]');
+    if (ab) {
+      var tag = ab.dataset.lab; LAB[tag].ang = parseFloat(ab.dataset.ang);
+      var sl = document.getElementById('sl-' + tag); if (sl) sl.value = LAB[tag].ang;
+      drawHaz(tag); return;
+    }
+    var sh = t.closest('.step-header, .ans-header');
+    if (sh) {
+      var box = sh.closest('.step, .ans-box'), op = !box.classList.contains('open');
+      box.classList.toggle('open'); sh.setAttribute('aria-expanded', op ? 'true' : 'false');
+      if (op) requestAnimationFrame(function () { if (box.getBoundingClientRect().top < 70) box.scrollIntoView({ block: 'start', behavior: 'smooth' }); });
+      return;
+    }
+    var opt = t.closest('.opt');
+    if (opt) {
+      var ul = opt.closest('.opts'), id = ul.dataset.test, cor = parseInt(ul.dataset.correct, 10), sel = parseInt(opt.dataset.i, 10);
+      ul.querySelectorAll('.opt').forEach(function (b) {
+        var i = parseInt(b.dataset.i, 10); b.disabled = true; b.classList.remove('ok', 'bad');
+        if (i === cor) b.classList.add('ok');
+        if (i === sel && sel !== cor) b.classList.add('bad');
+      });
+      var fb = document.querySelector('[data-fb="' + id + '"]');
+      if (fb) { fb.className = 'test-fb show ' + (sel === cor ? 'ok' : 'bad'); fb.textContent = FB[id][sel]; }
+      return;
+    }
+    if (t.closest('[data-action="print"]')) window.print();
+  });
+  document.addEventListener('change', function (e) {
+    var c = e.target.closest('.tgl');
+    if (c) { var g = document.getElementById(c.dataset.target); if (g) g.style.opacity = c.checked ? '1' : '0'; }
+  });
+  document.addEventListener('keydown', function (e) {
+    var h = e.target.closest && e.target.closest('.step-header, .ans-header, .cnode');
+    if (h && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); h.click(); }
+  });
+  window.addEventListener('beforeprint', function () { ['e1', 'e2', 'e3'].forEach(drawHaz); drawCR(); });
+  window.addEventListener('resize', function () {
+    var a = document.querySelector('.tab-content.active');
+    if (a && LAB[a.dataset.tab]) drawHaz(a.dataset.tab);
+    if (a && a.dataset.tab === 'e4') drawCR();
+  });
+
+  function init() {
+    document.querySelectorAll('.step-header, .ans-header, .cnode').forEach(function (h) {
+      h.setAttribute('tabindex', '0'); h.setAttribute('role', 'button');
+      if (!h.classList.contains('cnode')) h.setAttribute('aria-expanded', 'false');
+    });
+    document.querySelectorAll('.tgl').forEach(function (c) {
+      var g = document.getElementById(c.dataset.target); if (g) g.style.opacity = c.checked ? '1' : '0';
+    });
+    ['e1', 'e2', 'e3'].forEach(drawHaz); drawCR();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ['e1', 'e2', 'e3'].forEach(drawHaz); drawCR(); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+
+</script>
+</body>
+</html>
